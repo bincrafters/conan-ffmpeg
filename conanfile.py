@@ -55,7 +55,7 @@ class FFMpegConan(ConanFile):
             self.copy(pattern="*", dst="include", src="include")
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = ['avdevice', 'avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
         if self.settings.os == "Macos":
             self.cpp_info.exelinkflags.append("-framework AppKit")
             self.cpp_info.exelinkflags.append("-framework AudioToolbox")
@@ -70,3 +70,5 @@ class FFMpegConan(ConanFile):
             self.cpp_info.exelinkflags.append("-framework AVFoundation")
             self.cpp_info.exelinkflags.append("-framework Security")
             self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
+        elif self.settings.os == "Linux":
+            self.cpp_info.libs.extend(['dl', 'pthread'])
