@@ -36,6 +36,8 @@ class FFMpegConan(ConanFile):
                 args.extend(['--disable-optimizations', '--disable-mmx', '--disable-stripping', '--enable-debug'])
             if self.settings.compiler == 'Visual Studio':
                 args.append(' --toolchain=msvc')
+            if self.settings.arch == 'x86':
+                args.append('--arch=x86')
 
             # TODO : options
             args.append('--disable-sdl2')
@@ -45,7 +47,7 @@ class FFMpegConan(ConanFile):
             args.append('--disable-iconv')
 
             env_build = AutoToolsBuildEnvironment(self)
-            env_build.configure(args=args)
+            env_build.configure(args=args, build=False, host=False, target=False)
             env_build.make()
             env_build.make(args=['install'])
 
