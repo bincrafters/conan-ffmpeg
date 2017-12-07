@@ -15,8 +15,18 @@ class FFMpegConan(ConanFile):
     license = "https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md"
     exports_sources = ["LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
+    options = {"shared": [True, False],
+               "fPIC": [True, False],
+               "zlib": [True, False],
+               "bzlib": [True, False],
+               "lzma": [True, False],
+               "iconv": [True, False]}
+    default_options = ("shared=False",
+                       "fPIC=True",
+                       "zlib=True",
+                       "bzlib=True",
+                       "lzma=True",
+                       "iconv=True")
 
     def source(self):
         source_url = "http://ffmpeg.org/releases/ffmpeg-%s.tar.bz2" % self.version
@@ -29,6 +39,15 @@ class FFMpegConan(ConanFile):
         if self.settings.os == 'Windows':
             self.build_requires("msys2_installer/20161025@bincrafters/stable")
 
+    def requirements(self):
+        if self.options.zlib:
+            self.requires.add("zlib/1.2.11@conan/stable")
+        if self.options.bzlib:
+            self.requires.add("bzip2/1.0.6@conan/stable")
+        if self.options.lzma:
+            self.requires.add("lzma/5.2.3@bincrafters/stable")
+        if self.options.iconv:
+            self.requires.add("libiconv/1.15@bincrafters/stable")
     def run(self, command, output=True, cwd=None):
         if self.settings.compiler == 'Visual Studio':
             with tools.environment_append({'PATH': [self.deps_env_info['msys2_installer'].MSYS_BIN]}):
@@ -48,8 +67,7 @@ class FFMpegConan(ConanFile):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
                     '--disable-doc',
-                    '--disable-programs',
-                    '--enable-pic']
+                    '--disable-programs']
             if self.options.shared:
                 args.extend(['--disable-static', '--enable-shared'])
             else:
@@ -63,10 +81,12 @@ class FFMpegConan(ConanFile):
 
             # TODO : options
             args.append('--disable-sdl2')
-            args.append('--disable-zlib')
-            args.append('--disable-bzlib')
-            args.append('--disable-lzma')
-            args.append('--disable-iconv')
+
+            args.append('--enable-pic' if self.options.fPIC else '--disable-pic')
+            args.append('--enable-zlib' if self.options.zlib else '--disable-zlib')
+            args.append('--enable-bzlib' if self.options.bzlib else '--disable-bzlib')
+            args.append('--enable-lzma' if self.options.lzma else '--disable-lzma')
+            args.append('--enable-iconv' if self.options.iconv else '--disable-iconv')
 
             env_build = AutoToolsBuildEnvironment(self)
             # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
