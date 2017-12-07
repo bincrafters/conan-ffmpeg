@@ -25,6 +25,7 @@ class FFMpegConan(ConanFile):
         os.rename(extracted_dir, "sources")
 
     def build_requirements(self):
+        self.build_requires("yasm_installer/1.3.0@bincrafters/testing")
         if self.settings.os == 'Windows':
             self.build_requires("msys2_installer/20161025@bincrafters/stable")
 
