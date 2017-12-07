@@ -96,18 +96,10 @@ class FFMpegConan(ConanFile):
         else:
             self.cpp_info.libs = libs
         if self.settings.os == "Macos":
-            self.cpp_info.exelinkflags.append("-framework AppKit")
-            self.cpp_info.exelinkflags.append("-framework AudioToolbox")
-            self.cpp_info.exelinkflags.append("-framework VideoToolbox")
-            self.cpp_info.exelinkflags.append("-framework CoreVideo")
-            self.cpp_info.exelinkflags.append("-framework CoreMedia")
-            self.cpp_info.exelinkflags.append("-framework CoreImage")
-            self.cpp_info.exelinkflags.append("-framework CoreGraphics")
-            self.cpp_info.exelinkflags.append("-framework CoreFoundation")
-            self.cpp_info.exelinkflags.append("-framework OpenGL")
-            self.cpp_info.exelinkflags.append("-framework Foundation")
-            self.cpp_info.exelinkflags.append("-framework AVFoundation")
-            self.cpp_info.exelinkflags.append("-framework Security")
+            frameworks = ['AppKit', 'AudioToolbox', 'VideoToolbox', 'CoreVideo', 'CoreMedia', 'CoreImage',
+                          'CoreGraphics', 'CoreFoundation', 'OpenGL', 'Foundation', 'AVFoundation', 'Security']
+            for framework in frameworks:
+                self.cpp_info.exelinkflags.append("-framework %s" % framework)
             self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
         elif self.settings.os == "Linux":
             self.cpp_info.libs.extend(['dl', 'pthread'])
