@@ -69,6 +69,8 @@ class FFMpegConan(ConanFile):
             args.append('--disable-iconv')
 
             env_build = AutoToolsBuildEnvironment(self)
+            # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
+            # --host, --build, --target
             env_build.configure(args=args, build=False, host=False, target=False)
             env_build.make()
             env_build.make(args=['install'])
