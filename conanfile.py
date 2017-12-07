@@ -25,7 +25,8 @@ class FFMpegConan(ConanFile):
                "openjpeg": [True, False],
                "vorbis": [True, False],
                "vaapi": [True, False],
-               "vdpau": [True, False]}
+               "vdpau": [True, False],
+               "xcb": [True, False]}
     default_options = ("shared=False",
                        "fPIC=True",
                        "zlib=True",
@@ -36,7 +37,8 @@ class FFMpegConan(ConanFile):
                        "openjpeg=True",
                        "vorbis=True",
                        "vaapi=True",
-                       "vdpau=True")
+                       "vdpau=True",
+                       "xcb=True")
 
     def source(self):
         source_url = "http://ffmpeg.org/releases/ffmpeg-%s.tar.bz2" % self.version
@@ -48,6 +50,7 @@ class FFMpegConan(ConanFile):
         if self.settings.os != "Linux":
             self.options.remove("vaapi")
             self.options.remove("vdpau")
+            self.options.remove("xcb")
 
     def build_requirements(self):
         self.build_requires("yasm_installer/1.3.0@bincrafters/testing")
@@ -83,6 +86,11 @@ class FFMpegConan(ConanFile):
                     packages.append('libva-dev%s' % arch_suffix)
                 if self.options.vdpau:
                     packages.append('libvdpau-dev%s' % arch_suffix)
+                if self.options.xcb:
+                    packages.extend(['libxcb1-dev%s' % arch_suffix,
+                                     'libxcb-shm0-dev%s' % arch_suffix,
+                                     'libxcb-shape0-dev%s' % arch_suffix,
+                                     'libxcb-xfixes0-dev%s' % arch_suffix])
                 for package in packages:
                     installer.install(package)
 
@@ -134,7 +142,12 @@ class FFMpegConan(ConanFile):
             if self.settings.os == "Linux":
                 args.append('--enable-vaapi' if self.options.vaapi else '--disable-vaapi')
                 args.append('--enable-vdpau' if self.options.vdpau else '--disable-vdpau')
-                args.append('--disable-libxcb')
+                if self.options.xcb:
+                    args.extend(['--enable-libxcb', '--enable-libxcb-shm',
+                                 '--enable-libxcb-shape', '--enable-libxcb-xfixes'])
+                else:
+                    args.extend(['--disable-libxcb', '--disable-libxcb-shm',
+                                 '--disable-libxcb-shape', '--disable-libxcb-xfixes'])
 
             env_build = AutoToolsBuildEnvironment(self)
             # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
@@ -175,5 +188,7 @@ class FFMpegConan(ConanFile):
                 self.cpp_info.libs.extend(['va', 'va-drm', 'va-x11'])
             if self.options.vdpau:
                 self.cpp_info.libs.extend(['vdpau', 'X11'])
+            if self.options.xcb:
+                self.cpp_info.libs.extend(['xcb', 'xcb-shm', 'xcb-shape', 'xcb-xfixes'])
         elif self.settings.os == "Windows":
             self.cpp_info.libs.extend(['ws2_32', 'secur32', 'shlwapi', 'strmiids', 'vfw32'])

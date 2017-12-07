@@ -19,6 +19,7 @@ class TestPackageConan(ConanFile):
         if self.settings.os == "Linux":
             cmake.definitions['WITH_VAAPI'] = self.options['ffmpeg'].vaapi
             cmake.definitions['WITH_VDPAU'] = self.options['ffmpeg'].vdpau
+            cmake.definitions['WITH_XCB'] = self.options['ffmpeg'].xcb
 
         cmake.configure()
         cmake.build()

@@ -52,6 +52,14 @@ static void check_hwaccel(const char * name)
         throw_exception("hwaccel wasn't found", name);
 }
 
+static void check_input_device(const char * name)
+{
+    std::cout << "checking for device " << name << " ..." << std::endl;
+
+    if (!av_find_input_format(name))
+        throw_exception("device wasn't found", name);
+}
+
 int main()
 {
     avcodec_register_all();
@@ -77,5 +85,8 @@ int main()
 #ifdef WITH_VORBIS
     check_decoder("libvorbis");
     check_encoder("libvorbis");
+#endif
+#ifdef WITH_XCB
+    check_input_device("x11grab");
 #endif
 }
