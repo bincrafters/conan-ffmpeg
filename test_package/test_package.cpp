@@ -13,6 +13,7 @@ extern "C"
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <cstdlib>
 
 static void throw_exception(const char * message, const char * name)
 {
@@ -23,44 +24,49 @@ static void throw_exception(const char * message, const char * name)
 
 static void check_decoder(const char * name)
 {
-    std::cout << "checking for decoder " << name << " ..." << std::endl;
+    std::cout << "checking for decoder " << name << " ... ";
     if (!avcodec_find_decoder_by_name(name))
         throw_exception("decoder wasn't found", name);
+    std::cout << "OK!" << std::endl;
 }
 
 static void check_encoder(const char * name)
 {
-    std::cout << "checking for encoder " << name << " ..." << std::endl;
+    std::cout << "checking for encoder " << name << " ... ";
     if (!avcodec_find_encoder_by_name(name))
         throw_exception("encoder wasn't found", name);
+    std::cout << "OK!" << std::endl;
 }
 
 static void check_filter(const char * name)
 {
-    std::cout << "checking for filter " << name << " ..." << std::endl;
+    std::cout << "checking for filter " << name << " ... ";
     if (!avfilter_get_by_name(name))
         throw_exception("filter wasn't found", name);
+    std::cout << "OK!" << std::endl;
 }
 
 static void check_hwaccel(const char * name)
 {
-    std::cout << "checking for hwaccel " << name << " ..." << std::endl;
+    std::cout << "checking for hwaccel " << name << " ... ";
     AVHWDeviceType type = av_hwdevice_find_type_by_name(name);
     if (type == AV_HWDEVICE_TYPE_NONE)
         throw_exception("hwaccel wasn't found", name);
     if (!av_hwdevice_ctx_alloc(type))
         throw_exception("hwaccel wasn't found", name);
+    std::cout << "OK!" << std::endl;
 }
 
 static void check_input_device(const char * name)
 {
-    std::cout << "checking for device " << name << " ..." << std::endl;
+    std::cout << "checking for device " << name << " ... ";
 
     if (!av_find_input_format(name))
         throw_exception("device wasn't found", name);
+    std::cout << "OK!" << std::endl;
 }
 
-int main()
+int main() try
 {
     avcodec_register_all();
     av_register_all();
@@ -89,4 +95,10 @@ int main()
 #ifdef WITH_XCB
     check_input_device("x11grab");
 #endif
+    return EXIT_SUCCESS;
+} catch (std::runtime_error & e)
+{
+    std::cout << "FAIL!" << std::endl;
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
 }
