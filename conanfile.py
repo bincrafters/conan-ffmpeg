@@ -20,13 +20,15 @@ class FFMpegConan(ConanFile):
                "zlib": [True, False],
                "bzlib": [True, False],
                "lzma": [True, False],
-               "iconv": [True, False]}
+               "iconv": [True, False],
+               "openjpeg": [True, False]}
     default_options = ("shared=False",
                        "fPIC=True",
                        "zlib=True",
                        "bzlib=True",
                        "lzma=True",
-                       "iconv=True")
+                       "iconv=True",
+                       "openjpeg=True")
 
     def source(self):
         source_url = "http://ffmpeg.org/releases/ffmpeg-%s.tar.bz2" % self.version
@@ -48,6 +50,9 @@ class FFMpegConan(ConanFile):
             self.requires.add("lzma/5.2.3@bincrafters/stable")
         if self.options.iconv:
             self.requires.add("libiconv/1.15@bincrafters/stable")
+        if self.options.openjpeg:
+            self.requires.add("openjpeg/2.3.0@bincrafters/stable")
+
     def run(self, command, output=True, cwd=None):
         if self.settings.compiler == 'Visual Studio':
             with tools.environment_append({'PATH': [self.deps_env_info['msys2_installer'].MSYS_BIN]}):
@@ -87,6 +92,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-bzlib' if self.options.bzlib else '--disable-bzlib')
             args.append('--enable-lzma' if self.options.lzma else '--disable-lzma')
             args.append('--enable-iconv' if self.options.iconv else '--disable-iconv')
+            args.append('--enable-libopenjpeg' if self.options.openjpeg else '--disable-libopenjpeg')
 
             env_build = AutoToolsBuildEnvironment(self)
             # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like

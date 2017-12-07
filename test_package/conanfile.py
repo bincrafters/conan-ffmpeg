@@ -11,6 +11,9 @@ class TestPackageConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
+
+        cmake.definitions['WITH_OPENJPEG'] = self.options['ffmpeg'].openjpeg
+
         cmake.configure()
         cmake.build()
 
