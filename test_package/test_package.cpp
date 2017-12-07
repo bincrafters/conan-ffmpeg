@@ -74,4 +74,8 @@ int main()
 #ifdef WITH_VDPAU
     check_hwaccel("vdpau");
 #endif
+#ifdef WITH_VORBIS
+    check_decoder("libvorbis");
+    check_encoder("libvorbis");
+#endif
 }

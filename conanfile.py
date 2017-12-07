@@ -23,6 +23,7 @@ class FFMpegConan(ConanFile):
                "iconv": [True, False],
                "freetype": [True, False],
                "openjpeg": [True, False],
+               "vorbis": [True, False],
                "vaapi": [True, False],
                "vdpau": [True, False]}
     default_options = ("shared=False",
@@ -33,6 +34,7 @@ class FFMpegConan(ConanFile):
                        "iconv=True",
                        "freetype=True",
                        "openjpeg=True",
+                       "vorbis=True",
                        "vaapi=True",
                        "vdpau=True")
 
@@ -65,6 +67,8 @@ class FFMpegConan(ConanFile):
             self.requires.add("freetype/2.8.1@bincrafters/stable")
         if self.options.openjpeg:
             self.requires.add("openjpeg/2.3.0@bincrafters/stable")
+        if self.options.vorbis:
+            self.requires.add("vorbis/1.3.5@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
@@ -123,6 +127,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-iconv' if self.options.iconv else '--disable-iconv')
             args.append('--enable-libfreetype' if self.options.freetype else '--disable-libfreetype')
             args.append('--enable-libopenjpeg' if self.options.openjpeg else '--disable-libopenjpeg')
+            args.append('--enable-libvorbis' if self.options.vorbis else '--disable-libvorbis')
 
             # TODO : freetype on Linux via pkg-config!
 

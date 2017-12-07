@@ -14,6 +14,7 @@ class TestPackageConan(ConanFile):
 
         cmake.definitions['WITH_OPENJPEG'] = self.options['ffmpeg'].openjpeg
         cmake.definitions['WITH_FREETYPE'] = self.options['ffmpeg'].freetype
+        cmake.definitions['WITH_VORBIS'] = self.options['ffmpeg'].vorbis
 
         if self.settings.os == "Linux":
             cmake.definitions['WITH_VAAPI'] = self.options['ffmpeg'].vaapi
