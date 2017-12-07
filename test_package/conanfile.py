@@ -13,6 +13,7 @@ class TestPackageConan(ConanFile):
         cmake = CMake(self)
 
         cmake.definitions['WITH_OPENJPEG'] = self.options['ffmpeg'].openjpeg
+        cmake.definitions['WITH_FREETYPE'] = self.options['ffmpeg'].freetype
 
         cmake.configure()
         cmake.build()
