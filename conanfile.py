@@ -22,7 +22,9 @@ class FFMpegConan(ConanFile):
                "lzma": [True, False],
                "iconv": [True, False],
                "freetype": [True, False],
-               "openjpeg": [True, False]}
+               "openjpeg": [True, False],
+               "vaapi": [True, False],
+               "vdpau": [True, False]}
     default_options = ("shared=False",
                        "fPIC=True",
                        "zlib=True",
@@ -30,13 +32,20 @@ class FFMpegConan(ConanFile):
                        "lzma=True",
                        "iconv=True",
                        "freetype=True",
-                       "openjpeg=True")
+                       "openjpeg=True",
+                       "vaapi=True",
+                       "vdpau=True")
 
     def source(self):
         source_url = "http://ffmpeg.org/releases/ffmpeg-%s.tar.bz2" % self.version
         tools.get(source_url)
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
+
+    def config_options(self):
+        if self.settings.os != "Linux":
+            self.options.remove("vaapi")
+            self.options.remove("vdpau")
 
     def build_requirements(self):
         self.build_requires("yasm_installer/1.3.0@bincrafters/testing")
@@ -56,6 +65,22 @@ class FFMpegConan(ConanFile):
             self.requires.add("freetype/2.8.1@bincrafters/stable")
         if self.options.openjpeg:
             self.requires.add("openjpeg/2.3.0@bincrafters/stable")
+
+    def system_requirements(self):
+        if self.settings.os == "Linux" and tools.os_info.is_linux:
+            if tools.os_info.with_apt:
+                installer = tools.SystemPackageTool()
+                arch_suffix = ''
+                if self.settings.arch == "x86" and tools.detected_architecture() == "x86_64":
+                    arch_suffix = ':i386'
+
+                packages = []
+                if self.options.vaapi:
+                    packages.append('libva-dev%s' % arch_suffix)
+                if self.options.vdpau:
+                    packages.append('libvdpau-dev%s' % arch_suffix)
+                for package in packages:
+                    installer.install(package)
 
     def run(self, command, output=True, cwd=None):
         if self.settings.compiler == 'Visual Studio':
@@ -99,6 +124,13 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libfreetype' if self.options.freetype else '--disable-libfreetype')
             args.append('--enable-libopenjpeg' if self.options.openjpeg else '--disable-libopenjpeg')
 
+            # TODO : freetype on Linux via pkg-config!
+
+            if self.settings.os == "Linux":
+                args.append('--enable-vaapi' if self.options.vaapi else '--disable-vaapi')
+                args.append('--enable-vdpau' if self.options.vdpau else '--disable-vdpau')
+                args.append('--disable-libxcb')
+
             env_build = AutoToolsBuildEnvironment(self)
             # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
             # --host, --build, --target
@@ -134,5 +166,9 @@ class FFMpegConan(ConanFile):
             self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
         elif self.settings.os == "Linux":
             self.cpp_info.libs.extend(['dl', 'pthread'])
+            if self.options.vaapi:
+                self.cpp_info.libs.extend(['va', 'va-drm', 'va-x11'])
+            if self.options.vdpau:
+                self.cpp_info.libs.extend(['vdpau', 'X11'])
         elif self.settings.os == "Windows":
             self.cpp_info.libs.extend(['ws2_32', 'secur32', 'shlwapi', 'strmiids', 'vfw32'])
