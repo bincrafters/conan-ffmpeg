@@ -40,9 +40,9 @@ class FFMpegConan(ConanFile):
                        "bzlib=True",
                        "lzma=True",
                        "iconv=True",
-                       "freetype=True",
+                       "freetype=False",  # TODO : freetype on Linux via pkg-config!
                        "openjpeg=True",
-                       "vorbis=True",
+                       "vorbis=False",  # TODO : vorbis on Linux via pkg-config!
                        "vaapi=True",
                        "vdpau=True",
                        "xcb=True",
@@ -158,8 +158,6 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libfreetype' if self.options.freetype else '--disable-libfreetype')
             args.append('--enable-libopenjpeg' if self.options.openjpeg else '--disable-libopenjpeg')
             args.append('--enable-libvorbis' if self.options.vorbis else '--disable-libvorbis')
-
-            # TODO : freetype on Linux via pkg-config!
 
             if self.settings.os == "Linux":
                 args.append('--enable-vaapi' if self.options.vaapi else '--disable-vaapi')
