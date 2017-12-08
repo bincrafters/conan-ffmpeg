@@ -66,6 +66,39 @@ static void check_input_device(const char * name)
     std::cout << "OK!" << std::endl;
 }
 
+static void check_protocol(const char * name)
+{
+    std::cout << "checking for protocol " << name << " ... ";
+
+    bool found = false;
+
+    const char * protocol = NULL;
+    void* dontcare = NULL;
+
+    while ((protocol = avio_enum_protocols(&dontcare, 0))) {
+        if (0 == strcmp(name, protocol)) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found) {
+        std::cout << "OK!" << std::endl;
+        return;
+    }
+
+    while ((protocol = avio_enum_protocols(&dontcare, 1))) {
+        if (0 == strcmp(name, protocol)) {
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        throw_exception("protocol wasn't found", name);
+    std::cout << "OK!" << std::endl;
+}
+
 int main() try
 {
     avcodec_register_all();
@@ -94,6 +127,24 @@ int main() try
 #endif
 #ifdef WITH_XCB
     check_input_device("x11grab");
+#endif
+#if defined(WITH_APPKIT) && defined(WITH_COREIMAGE)
+    check_filter("coreimage");
+#endif
+#ifdef WITH_AVFOUNDATION
+    check_input_device("avfoundation");
+#endif
+#ifdef WITH_AUDIOTOOLBOX
+    check_decoder("aac_at");
+#endif
+#ifdef WITH_VIDEOTOOLBOX
+    check_hwaccel("videotoolbox");
+#endif
+#ifdef WITH_VDA
+    check_hwaccel("h264_vda");
+#endif
+#ifdef WITH_SECURETRANSPORT
+    check_protocol("tls");
 #endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)

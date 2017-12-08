@@ -21,6 +21,15 @@ class TestPackageConan(ConanFile):
             cmake.definitions['WITH_VDPAU'] = self.options['ffmpeg'].vdpau
             cmake.definitions['WITH_XCB'] = self.options['ffmpeg'].xcb
 
+        if self.settings.os == "Macos":
+            cmake.definitions['WITH_APPKIT'] = self.options['ffmpeg'].appkit
+            cmake.definitions['WITH_AVFOUNDATION'] = self.options['ffmpeg'].avfoundation
+            cmake.definitions['WITH_COREIMAGE'] = self.options['ffmpeg'].coreimage
+            cmake.definitions['WITH_AUDIOTOOLBOX'] = self.options['ffmpeg'].audiotoolbox
+            cmake.definitions['WITH_VIDEOTOOLBOX'] = self.options['ffmpeg'].videotoolbox
+            cmake.definitions['WITH_VDA'] = self.options['ffmpeg'].vda
+            cmake.definitions['WITH_SECURETRANSPORT'] = self.options['ffmpeg'].securetransport
+
         cmake.configure()
         cmake.build()
 

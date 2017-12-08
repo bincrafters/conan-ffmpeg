@@ -26,7 +26,14 @@ class FFMpegConan(ConanFile):
                "vorbis": [True, False],
                "vaapi": [True, False],
                "vdpau": [True, False],
-               "xcb": [True, False]}
+               "xcb": [True, False],
+               "appkit": [True, False],
+               "avfoundation": [True, False],
+               "coreimage": [True, False],
+               "audiotoolbox": [True, False],
+               "videotoolbox": [True, False],
+               "vda": [True, False],
+               "securetransport": [True, False]}
     default_options = ("shared=False",
                        "fPIC=True",
                        "zlib=True",
@@ -38,7 +45,14 @@ class FFMpegConan(ConanFile):
                        "vorbis=True",
                        "vaapi=True",
                        "vdpau=True",
-                       "xcb=True")
+                       "xcb=True",
+                       "appkit=True",
+                       "avfoundation=True",
+                       "coreimage=True",
+                       "audiotoolbox=True",
+                       "videotoolbox=True",
+                       "vda=False",
+                       "securetransport=True")
 
     def source(self):
         source_url = "http://ffmpeg.org/releases/ffmpeg-%s.tar.bz2" % self.version
@@ -51,6 +65,14 @@ class FFMpegConan(ConanFile):
             self.options.remove("vaapi")
             self.options.remove("vdpau")
             self.options.remove("xcb")
+        if self.settings.os != "Macos":
+            self.options.remove("appkit")
+            self.options.remove("avfoundation")
+            self.options.remove("coreimage")
+            self.options.remove("audiotoolbox")
+            self.options.remove("videotoolbox")
+            self.options.remove("vda")
+            self.options.remove("securetransport")
 
     def build_requirements(self):
         self.build_requires("yasm_installer/[>=1.3.0]@bincrafters/stable")
@@ -149,6 +171,15 @@ class FFMpegConan(ConanFile):
                     args.extend(['--disable-libxcb', '--disable-libxcb-shm',
                                  '--disable-libxcb-shape', '--disable-libxcb-xfixes'])
 
+            if self.settings.os == "Macos":
+                args.append('--enable-appkit' if self.options.appkit else '--disable-appkit')
+                args.append('--enable-avfoundation' if self.options.avfoundation else '--disable-avfoundation')
+                args.append('--enable-coreimage' if self.options.avfoundation else '--disable-coreimage')
+                args.append('--enable-audiotoolbox' if self.options.audiotoolbox else '--disable-audiotoolbox')
+                args.append('--enable-videotoolbox' if self.options.videotoolbox else '--disable-videotoolbox')
+                args.append('--enable-vda' if self.options.vda else '--disable-vda')
+                args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
+
             env_build = AutoToolsBuildEnvironment(self)
             # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
             # --host, --build, --target
@@ -177,8 +208,21 @@ class FFMpegConan(ConanFile):
         else:
             self.cpp_info.libs = libs
         if self.settings.os == "Macos":
-            frameworks = ['AppKit', 'AudioToolbox', 'VideoToolbox', 'CoreVideo', 'CoreMedia', 'CoreImage',
-                          'CoreGraphics', 'CoreFoundation', 'OpenGL', 'Foundation', 'AVFoundation', 'Security']
+            frameworks = ['CoreVideo', 'CoreMedia', 'CoreGraphics', 'CoreFoundation', 'OpenGL', 'Foundation']
+            if self.options.appkit:
+                frameworks.append('AppKit')
+            if self.options.avfoundation:
+                frameworks.append('AVFoundation')
+            if self.options.coreimage:
+                frameworks.append('CoreImage')
+            if self.options.audiotoolbox:
+                frameworks.append('AudioToolbox')
+            if self.options.videotoolbox:
+                frameworks.append('VideoToolbox')
+            if self.options.vda:
+                frameworks.append('VideoDecodeAcceleration')
+            if self.options.securetransport:
+                frameworks.append('Security')
             for framework in frameworks:
                 self.cpp_info.exelinkflags.append("-framework %s" % framework)
             self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
