@@ -53,7 +53,7 @@ class FFMpegConan(ConanFile):
             self.options.remove("xcb")
 
     def build_requirements(self):
-        self.build_requires("yasm_installer/[>=1.3.0]@bincrafters/testing")
+        self.build_requires("yasm_installer/[>=1.3.0]@bincrafters/stable")
         if self.settings.os == 'Windows':
             self.build_requires("msys2_installer/[>=20161025]@bincrafters/stable")
 
