@@ -63,6 +63,9 @@ class FFMpegConan(ConanFile):
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
 
+    def configure(self):
+        del self.settings.compiler.libcxx
+
     def config_options(self):
         if self.settings.os != "Linux":
             self.options.remove("vaapi")
