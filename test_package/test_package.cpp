@@ -150,6 +150,9 @@ int main() try
     check_decoder("libopus");
     check_encoder("libopus");
 #endif
+#ifdef WITH_ZMQ
+    check_filter("zmq");
+#endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)
 {

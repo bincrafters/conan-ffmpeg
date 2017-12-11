@@ -25,6 +25,7 @@ class FFMpegConan(ConanFile):
                "openjpeg": [True, False],
                "opus": [True, False],
                "vorbis": [True, False],
+               "zmq": [True, False],
                "vaapi": [True, False],
                "vdpau": [True, False],
                "xcb": [True, False],
@@ -98,6 +99,8 @@ class FFMpegConan(ConanFile):
             self.requires.add("vorbis/[>=1.3.5]@bincrafters/stable")
         if self.options.opus:
             self.requires.add("opus/[>=1.2.1]@bincrafters/stable")
+        if self.options.zmq:
+            self.requires.add("zmq/[>=4.2.2]@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
@@ -172,6 +175,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libopenjpeg' if self.options.openjpeg else '--disable-libopenjpeg')
             args.append('--enable-libvorbis' if self.options.vorbis else '--disable-libvorbis')
             args.append('--enable-libopus' if self.options.opus else '--disable-libopus')
+            args.append('--enable-libzmq' if self.options.zmq else '--disable-libzmq')
 
             if self.settings.os == "Linux":
                 args.append('--enable-vaapi' if self.options.vaapi else '--disable-vaapi')
@@ -198,6 +202,8 @@ class FFMpegConan(ConanFile):
             if self.options.vorbis:
                 self.copy_pkg_config('ogg')
                 self.copy_pkg_config('vorbis')
+            if self.options.zmq:
+                self.copy_pkg_config('zmq')
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 
