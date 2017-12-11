@@ -59,10 +59,39 @@ static void check_hwaccel(const char * name)
 
 static void check_input_device(const char * name)
 {
-    std::cout << "checking for device " << name << " ... ";
+    std::cout << "checking for input device " << name << " ... ";
 
-    if (!av_find_input_format(name))
-        throw_exception("device wasn't found", name);
+    AVInputFormat * format = NULL;
+    bool found = false;
+
+    while ((format = av_iformat_next(format))) {
+        if (0 == strcmp(name, format->name)) {
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+        throw_exception("output input wasn't found", name);
+
+    std::cout << "OK!" << std::endl;
+}
+
+static void check_output_device(const char * name)
+{
+    std::cout << "checking for output device " << name << " ... ";
+
+    AVOutputFormat * format = NULL;
+    bool found = false;
+
+    while ((format = av_oformat_next(format))) {
+        if (0 == strcmp(name, format->name)) {
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+        throw_exception("output device wasn't found", name);
+
     std::cout << "OK!" << std::endl;
 }
 
@@ -152,6 +181,17 @@ int main() try
 #endif
 #ifdef WITH_ZMQ
     check_filter("zmq");
+#endif
+#ifdef WITH_ALSA
+    check_input_device("alsa");
+    check_output_device("alsa");
+#endif
+#ifdef WITH_JACK
+    check_input_device("jack");
+#endif
+#ifdef WITH_PULSE
+    check_input_device("pulse");
+    check_output_device("pulse");
 #endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)

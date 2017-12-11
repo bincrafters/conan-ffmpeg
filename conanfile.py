@@ -26,6 +26,9 @@ class FFMpegConan(ConanFile):
                "opus": [True, False],
                "vorbis": [True, False],
                "zmq": [True, False],
+               "alsa": [True, False],
+               "jack": [True, False],
+               "pulse": [True, False],
                "vaapi": [True, False],
                "vdpau": [True, False],
                "xcb": [True, False],
@@ -46,6 +49,10 @@ class FFMpegConan(ConanFile):
                        "openjpeg=True",
                        "opus=True",
                        "vorbis=True",
+                       "zmq=True",
+                       "alsa=True",
+                       "jack=True",
+                       "pulse=True",
                        "vaapi=True",
                        "vdpau=True",
                        "xcb=True",
@@ -71,6 +78,9 @@ class FFMpegConan(ConanFile):
             self.options.remove("vaapi")
             self.options.remove("vdpau")
             self.options.remove("xcb")
+            self.options.remove("alsa")
+            self.options.remove("jack")
+            self.options.remove("pulse")
         if self.settings.os != "Macos":
             self.options.remove("appkit")
             self.options.remove("avfoundation")
@@ -114,6 +124,12 @@ class FFMpegConan(ConanFile):
                     arch_suffix = ':i386'
 
                 packages = ['pkg-config']
+                if self.options.alsa:
+                    packages.append('libasound2-dev%s' % arch_suffix)
+                if self.options.jack:
+                    packages.append('libjack-dev%s' % arch_suffix)
+                if self.options.pulse:
+                    packages.append('libpulse-dev%s' % arch_suffix)
                 if self.options.vaapi:
                     packages.append('libva-dev%s' % arch_suffix)
                 if self.options.vdpau:
@@ -181,6 +197,9 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libzmq' if self.options.zmq else '--disable-libzmq')
 
             if self.settings.os == "Linux":
+                args.append('--enable-alsa' if self.options.alsa else '--disable-alsa')
+                args.append('--enable-jack' if self.options.jack else '--disable-jack')
+                args.append('--enable-libpulse' if self.options.pulse else '--disable-libpulse')
                 args.append('--enable-vaapi' if self.options.vaapi else '--disable-vaapi')
                 args.append('--enable-vdpau' if self.options.vdpau else '--disable-vdpau')
                 if self.options.xcb:
@@ -259,6 +278,12 @@ class FFMpegConan(ConanFile):
             self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
         elif self.settings.os == "Linux":
             self.cpp_info.libs.extend(['dl', 'pthread'])
+            if self.options.alsa:
+                self.cpp_info.libs.append('asound')
+            if self.options.jack:
+                self.cpp_info.libs.append('jack')
+            if self.options.pulse:
+                self.cpp_info.libs.append('pulse')
             if self.options.vaapi:
                 self.cpp_info.libs.extend(['va', 'va-drm', 'va-x11'])
             if self.options.vdpau:

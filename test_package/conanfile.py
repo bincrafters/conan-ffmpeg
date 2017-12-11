@@ -22,6 +22,9 @@ class TestPackageConan(ConanFile):
             cmake.definitions['WITH_VAAPI'] = self.options['ffmpeg'].vaapi
             cmake.definitions['WITH_VDPAU'] = self.options['ffmpeg'].vdpau
             cmake.definitions['WITH_XCB'] = self.options['ffmpeg'].xcb
+            cmake.definitions['WITH_ALSA'] = self.options['ffmpeg'].alsa
+            cmake.definitions['WITH_JACK'] = self.options['ffmpeg'].jack
+            cmake.definitions['WITH_PULSE'] = self.options['ffmpeg'].pulse
 
         if self.settings.os == "Macos":
             cmake.definitions['WITH_APPKIT'] = self.options['ffmpeg'].appkit
