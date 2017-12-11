@@ -146,6 +146,10 @@ int main() try
 #ifdef WITH_SECURETRANSPORT
     check_protocol("tls");
 #endif
+#ifdef WITH_OPUS
+    check_decoder("libopus");
+    check_encoder("libopus");
+#endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)
 {

@@ -23,6 +23,7 @@ class FFMpegConan(ConanFile):
                "iconv": [True, False],
                "freetype": [True, False],
                "openjpeg": [True, False],
+               "opus": [True, False],
                "vorbis": [True, False],
                "vaapi": [True, False],
                "vdpau": [True, False],
@@ -42,6 +43,7 @@ class FFMpegConan(ConanFile):
                        "iconv=True",
                        "freetype=False",  # TODO : freetype on Linux via pkg-config!
                        "openjpeg=True",
+                       "opus=True",
                        "vorbis=False",  # TODO : vorbis on Linux via pkg-config!
                        "vaapi=True",
                        "vdpau=True",
@@ -94,6 +96,8 @@ class FFMpegConan(ConanFile):
             self.requires.add("openjpeg/[>=2.3.0]@bincrafters/stable")
         if self.options.vorbis:
             self.requires.add("vorbis/[>=1.3.5]@bincrafters/stable")
+        if self.options.opus:
+            self.requires.add("opus/[>=1.2.1]@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
@@ -158,6 +162,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libfreetype' if self.options.freetype else '--disable-libfreetype')
             args.append('--enable-libopenjpeg' if self.options.openjpeg else '--disable-libopenjpeg')
             args.append('--enable-libvorbis' if self.options.vorbis else '--disable-libvorbis')
+            args.append('--enable-libopus' if self.options.opus else '--disable-libopus')
 
             if self.settings.os == "Linux":
                 args.append('--enable-vaapi' if self.options.vaapi else '--disable-vaapi')
@@ -178,12 +183,23 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-vda' if self.options.vda else '--disable-vda')
                 args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
 
-            env_build = AutoToolsBuildEnvironment(self)
-            # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
-            # --host, --build, --target
-            env_build.configure(args=args, build=False, host=False, target=False)
-            env_build.make()
-            env_build.make(args=['install'])
+            os.makedirs('pkgconfig')
+            if self.options.opus:
+                opus_root = self.deps_cpp_info['opus'].rootpath
+                opus_pc_old = os.path.join(opus_root, 'lib', 'pkgconfig', 'opus.pc')
+                opus_pc = os.path.join('pkgconfig', 'opus.pc')
+                shutil.copy(opus_pc_old, opus_pc)
+                tools.replace_prefix_in_pc_file(opus_pc, opus_root)
+
+            env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
+
+            with tools.environment_append(env_vars):
+                env_build = AutoToolsBuildEnvironment(self)
+                # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
+                # --host, --build, --target
+                env_build.configure(args=args, build=False, host=False, target=False)
+                env_build.make()
+                env_build.make(args=['install'])
 
     def package(self):
         with tools.chdir("sources"):
