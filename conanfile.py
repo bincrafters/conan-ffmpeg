@@ -44,7 +44,7 @@ class FFMpegConan(ConanFile):
                        "freetype=False",  # TODO : freetype on Linux via pkg-config!
                        "openjpeg=True",
                        "opus=True",
-                       "vorbis=False",  # TODO : vorbis on Linux via pkg-config!
+                       "vorbis=True",
                        "vaapi=True",
                        "vdpau=True",
                        "xcb=True",
@@ -134,6 +134,15 @@ class FFMpegConan(ConanFile):
         else:
             super(FFMpegConan, self).run(command, output, cwd)
 
+    def copy_pkg_config(self, name):
+        root = self.deps_cpp_info[name].rootpath
+        pc_dir = os.path.join(root, 'lib', 'pkgconfig')
+        pc_files = glob.glob('%s/*.pc' % pc_dir)
+        for pc_name in pc_files:
+            new_pc = os.path.join('pkgconfig', os.path.basename(pc_name))
+            shutil.copy(pc_name, new_pc)
+            tools.replace_prefix_in_pc_file(new_pc, root)
+
     def build(self):
         with tools.chdir('sources'):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
@@ -185,11 +194,10 @@ class FFMpegConan(ConanFile):
 
             os.makedirs('pkgconfig')
             if self.options.opus:
-                opus_root = self.deps_cpp_info['opus'].rootpath
-                opus_pc_old = os.path.join(opus_root, 'lib', 'pkgconfig', 'opus.pc')
-                opus_pc = os.path.join('pkgconfig', 'opus.pc')
-                shutil.copy(opus_pc_old, opus_pc)
-                tools.replace_prefix_in_pc_file(opus_pc, opus_root)
+                self.copy_pkg_config('opus')
+            if self.options.vorbis:
+                self.copy_pkg_config('ogg')
+                self.copy_pkg_config('vorbis')
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 
