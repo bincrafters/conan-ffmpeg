@@ -45,7 +45,7 @@ class FFMpegConan(ConanFile):
                        "bzlib=True",
                        "lzma=True",
                        "iconv=True",
-                       "freetype=False",  # TODO : freetype on Linux via pkg-config!
+                       "freetype=True",
                        "openjpeg=True",
                        "opus=True",
                        "vorbis=True",
@@ -219,6 +219,9 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
 
             os.makedirs('pkgconfig')
+            if self.options.freetype:
+                self.copy_pkg_config('freetype')
+                self.copy_pkg_config('libpng')
             if self.options.opus:
                 self.copy_pkg_config('opus')
             if self.options.vorbis:
