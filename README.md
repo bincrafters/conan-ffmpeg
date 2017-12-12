@@ -1,26 +1,26 @@
-[ ![Download](https://api.bintray.com/packages/bincrafters/public-conan/somelib%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/somelib%3Abincrafters/_latestVersion)
-[![Build Status](https://travis-ci.org/bincrafters/conan-somelib.svg?branch=stable%2F0.0.0)](https://travis-ci.org/bincrafters/conan-somelib)
-[![Build status](https://ci.appveyor.com/api/projects/status/sxs9n6vb8nqa92l5?svg=true)](https://ci.appveyor.com/project/BinCrafters/conan-somelib)
+[![Download](https://api.bintray.com/packages/bincrafters/public-conan/ffmpeg%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/ffmpeg%3Abincrafters/_latestVersion)
+[![Build Status](https://travis-ci.org/bincrafters/conan-ffmpeg.svg?branch=stable%2F3.4)](https://travis-ci.org/bincrafters/conan-ffmpeg)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-ffmpeg?branch=stable%2F3.4&svg=true)](https://ci.appveyor.com/project/bincrafters/conan-ffmpeg)
 
-[Conan.io](https://conan.io) package for [somelib](https://github.com/someauthor/somelib) project
+[Conan.io](https://conan.io) package recipe for *ffmpeg*.
 
-The packages generated with this **conanfile** can be found in [Bintray](https://bintray.com/bincrafters/public-conan/somelib%3Abincrafters).
+A complete, cross-platform solution to record, convert and stream audio and video
+
+The packages generated with this **conanfile** can be found on [Bintray](https://bintray.com/bincrafters/public-conan/ffmpeg%3Abincrafters).
 
 ## For Users: Use this package
 
 ### Basic setup
 
-    $ conan install somelib/0.0.0@bincrafters/stable
+    $ conan install ffmpeg/3.4@bincrafters/stable
 
 ### Project setup
 
 If you handle multiple dependencies in your project is better to add a *conanfile.txt*
 
     [requires]
-    somelib/0.0.0@bincrafters/stable
+    ffmpeg/3.4@bincrafters/stable
 
-    [generators]
-    txt
 
 Complete the installation of requirements for your project running:
 
@@ -38,13 +38,47 @@ The following command both runs all the steps of the conan file, and publishes t
 
     $ conan create bincrafters/stable
 
+
+### Available Options
+| Option        | Default | Possible Values  |
+| ------------- |:----------------- |:------------:|
+| xcb      | True |  [True, False] |
+| pulse      | True |  [True, False] |
+| vorbis      | True |  [True, False] |
+| lzma      | True |  [True, False] |
+| iconv      | True |  [True, False] |
+| bzlib      | True |  [True, False] |
+| opus      | True |  [True, False] |
+| avfoundation      | True |  [True, False] |
+| shared      | False |  [True, False] |
+| zmq      | True |  [True, False] |
+| alsa      | True |  [True, False] |
+| freetype      | False |  [True, False] |
+| audiotoolbox      | True |  [True, False] |
+| fPIC      | True |  [True, False] |
+| videotoolbox      | True |  [True, False] |
+| coreimage      | True |  [True, False] |
+| appkit      | True |  [True, False] |
+| openjpeg      | True |  [True, False] |
+| securetransport      | True |  [True, False] |
+| vdpau      | True |  [True, False] |
+| zlib      | True |  [True, False] |
+| vda      | False |  [True, False] |
+| vaapi      | True |  [True, False] |
+| jack      | True |  [True, False] |
+
 ## Add Remote
 
     $ conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 
 ## Upload
 
-    $ conan upload somelib/0.0.0@bincrafters/stable --all -r bincrafters
+    $ conan upload ffmpeg/3.4@bincrafters/stable --all -r bincrafters
 
-## License
-[LICENSE_TYPE](LICENSE)
+
+## Conan Recipe License
+
+NOTE: The conan recipe license applies only to the files of this recipe, which can be used to build and package ffmpeg.
+It does *not* in any way apply or is related to the actual software being packaged.
+
+[MIT](https://github.com/bincrafters/conan-ffmpeg.git/blob/testing/3.4/LICENSE.md)
