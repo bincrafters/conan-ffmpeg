@@ -26,6 +26,10 @@ class FFMpegConan(ConanFile):
                "opus": [True, False],
                "vorbis": [True, False],
                "zmq": [True, False],
+               "sdl2": [True, False],
+               "x264": [True, False],
+               "x265": [True, False],
+               "vpx": [True, False],
                "alsa": [True, False],
                "jack": [True, False],
                "pulse": [True, False],
@@ -45,11 +49,15 @@ class FFMpegConan(ConanFile):
                        "bzlib=True",
                        "lzma=True",
                        "iconv=True",
-                       "freetype=True",
+                       "freetype=False",
                        "openjpeg=True",
-                       "opus=True",
-                       "vorbis=True",
+                       "opus=False",
+                       "vorbis=False",
                        "zmq=True",
+                       "sdl2=True",
+                       "x264=True",
+                       "x265=True",
+                       "vpx=True",
                        "alsa=True",
                        "jack=True",
                        "pulse=True",
@@ -114,6 +122,14 @@ class FFMpegConan(ConanFile):
             self.requires.add("opus/[>=1.2.1]@bincrafters/stable")
         if self.options.zmq:
             self.requires.add("zmq/[>=4.2.2]@bincrafters/stable")
+        if self.options.sdl2:
+            self.requires.add("sdl2/[>=2.0.7]@bincrafters/stable")
+        if self.options.x264:
+            self.requires.add("libx264/[>=20171211]@bincrafters/stable")
+        if self.options.x265:
+            self.requires.add("libx265/[>=2.6]@bincrafters/stable")
+        if self.options.vpx:
+            self.requires.add("libvpx/[>=1.6.1]@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
@@ -162,6 +178,7 @@ class FFMpegConan(ConanFile):
         pc_files = glob.glob('%s/*.pc' % pc_dir)
         for pc_name in pc_files:
             new_pc = os.path.join('pkgconfig', os.path.basename(pc_name))
+            self.output.warn('copy .pc file %s' % os.path.basename(pc_name))
             shutil.copy(pc_name, new_pc)
             tools.replace_prefix_in_pc_file(new_pc, root)
 
@@ -182,8 +199,7 @@ class FFMpegConan(ConanFile):
             if self.settings.arch == 'x86':
                 args.append('--arch=x86')
 
-            # TODO : options
-            args.append('--disable-sdl2')
+            args.append('--disable-postproc')
 
             args.append('--enable-pic' if self.options.fPIC else '--disable-pic')
             args.append('--enable-zlib' if self.options.zlib else '--disable-zlib')
@@ -195,6 +211,13 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libvorbis' if self.options.vorbis else '--disable-libvorbis')
             args.append('--enable-libopus' if self.options.opus else '--disable-libopus')
             args.append('--enable-libzmq' if self.options.zmq else '--disable-libzmq')
+            args.append('--enable-sdl2' if self.options.sdl2 else '--disable-sdl2')
+            args.append('--enable-libx264' if self.options.x264 else '--disable-libx264')
+            args.append('--enable-libx265' if self.options.x265 else '--disable-libx265')
+            args.append('--enable-libvpx' if self.options.vpx else '--disable-libvpx')
+
+            if self.options.x264 or self.options.x266:
+                args.append('--enable-gpl')
 
             if self.settings.os == "Linux":
                 args.append('--enable-alsa' if self.options.alsa else '--disable-alsa')
@@ -229,6 +252,14 @@ class FFMpegConan(ConanFile):
                 self.copy_pkg_config('vorbis')
             if self.options.zmq:
                 self.copy_pkg_config('zmq')
+            if self.options.sdl2:
+                self.copy_pkg_config('sdl2')
+            if self.options.x264:
+                self.copy_pkg_config('libx264')
+            if self.options.x265:
+                self.copy_pkg_config('libx265')
+            if self.options.vpx:
+                self.copy_pkg_config('libvpx')
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 

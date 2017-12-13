@@ -193,6 +193,21 @@ int main() try
     check_input_device("pulse");
     check_output_device("pulse");
 #endif
+#ifdef WITH_SDL2
+    check_output_device("sdl,sdl2");
+#endif
+#ifdef WITH_X264
+    check_encoder("libx264");
+#endif
+#ifdef WITH_X265
+    check_encoder("libx265");
+#endif
+#ifdef WITH_VPX
+    check_decoder("libvpx");
+    check_decoder("libvpx-vp9");
+    check_encoder("libvpx");
+    check_encoder("libvpx-vp9");
+#endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)
 {
