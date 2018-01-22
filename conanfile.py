@@ -218,7 +218,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libx265' if self.options.x265 else '--disable-libx265')
             args.append('--enable-libvpx' if self.options.vpx else '--disable-libvpx')
 
-            if self.options.x264 or self.options.x266:
+            if self.options.x264 or self.options.x265:
                 args.append('--enable-gpl')
 
             if self.settings.os == "Linux":
