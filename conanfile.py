@@ -72,6 +72,14 @@ class FFMpegConan(ConanFile):
                        "vda=False",
                        "securetransport=True")
 
+    @property
+    def is_mingw(self):
+        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc'
+
+    @property
+    def is_msvc(self):
+        return self.settings.compiler == 'Visual Studio'
+
     def source(self):
         source_url = "http://ffmpeg.org/releases/ffmpeg-%s.tar.bz2" % self.version
         tools.get(source_url)
@@ -160,20 +168,6 @@ class FFMpegConan(ConanFile):
                 for package in packages:
                     installer.install(package)
 
-    def run(self, command, output=True, cwd=None):
-        if self.settings.compiler == 'Visual Studio':
-            with tools.environment_append({'PATH': [self.deps_env_info['msys2_installer'].MSYS_BIN]}):
-                bash = "%MSYS_BIN%\\bash"
-                vcvars_command = tools.vcvars_command(self.settings)
-                command = "{vcvars_command} && {bash} -c ^'{command}'".format(
-                    vcvars_command=vcvars_command,
-                    bash=bash,
-                    command=command)
-
-                super(FFMpegConan, self).run(command, output, cwd)
-        else:
-            super(FFMpegConan, self).run(command, output, cwd)
-
     def copy_pkg_config(self, name):
         root = self.deps_cpp_info[name].rootpath
         pc_dir = os.path.join(root, 'lib', 'pkgconfig')
@@ -185,6 +179,19 @@ class FFMpegConan(ConanFile):
             tools.replace_prefix_in_pc_file(new_pc, root)
 
     def build(self):
+        if self.is_msvc or self.is_mingw:
+            msys_bin = self.deps_env_info['msys2_installer'].MSYS_BIN
+            with tools.environment_append({'PATH': [msys_bin],
+                                           'CONAN_BASH_PATH': os.path.join(msys_bin, 'bash.exe')}):
+                if self.is_msvc:
+                    with tools.vcvars(self.settings):
+                        self.build_configure()
+                else:
+                    self.build_configure()
+        else:
+            self.build_configure()
+
+    def build_configure(self):
         with tools.chdir('sources'):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
@@ -266,7 +273,7 @@ class FFMpegConan(ConanFile):
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 
             with tools.environment_append(env_vars):
-                env_build = AutoToolsBuildEnvironment(self)
+                env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw or self.is_msvc)
                 # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
                 # --host, --build, --target
                 env_build.configure(args=args, build=False, host=False, target=False)
