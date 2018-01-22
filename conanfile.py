@@ -136,8 +136,10 @@ class FFMpegConan(ConanFile):
             if tools.os_info.with_apt:
                 installer = tools.SystemPackageTool()
                 arch_suffix = ''
-                if self.settings.arch == "x86" and tools.detected_architecture() == "x86_64":
+                if self.settings.arch == "x86":
                     arch_suffix = ':i386'
+                elif self.settings.arch == "x86_64":
+                    arch_suffix = ':amd64'
 
                 packages = ['pkg-config']
                 if self.options.alsa:
