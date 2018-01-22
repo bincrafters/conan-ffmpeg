@@ -272,6 +272,9 @@ class FFMpegConan(ConanFile):
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 
+            if self.settings.compiler == 'Visual Studio':
+                args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
+
             with tools.environment_append(env_vars):
                 env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw or self.is_msvc)
                 # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
