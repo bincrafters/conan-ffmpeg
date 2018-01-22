@@ -12,6 +12,7 @@ class TestPackageConan(ConanFile):
     def build(self):
         cmake = CMake(self)
 
+        cmake.definitions['WITH_POSTPROC'] = self.options['ffmpeg'].postproc
         cmake.definitions['WITH_OPENJPEG'] = self.options['ffmpeg'].openjpeg
         cmake.definitions['WITH_FREETYPE'] = self.options['ffmpeg'].freetype
         cmake.definitions['WITH_VORBIS'] = self.options['ffmpeg'].vorbis

@@ -7,6 +7,9 @@ extern "C"
 #include <libswresample/swresample.h>
 #include <libswscale/swscale.h>
 #include <libavutil/hwcontext.h>
+#ifdef WITH_POSTPROC
+#include <libpostproc/postprocess.h>
+#endif
 }
 
 #include <stdexcept>
@@ -136,7 +139,9 @@ int main() try
     avdevice_register_all();
     swresample_version();
     swscale_version();
-
+#ifdef WITH_POSTPROC
+    postproc_version();
+#endif
 #ifdef WITH_OPENJPEG
     check_decoder("libopenjpeg");
     check_encoder("libopenjpeg");

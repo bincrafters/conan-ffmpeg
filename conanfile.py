@@ -17,6 +17,7 @@ class FFMpegConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False],
                "fPIC": [True, False],
+               "postproc": [True, False],
                "zlib": [True, False],
                "bzlib": [True, False],
                "lzma": [True, False],
@@ -45,6 +46,7 @@ class FFMpegConan(ConanFile):
                "securetransport": [True, False]}
     default_options = ("shared=False",
                        "fPIC=True",
+                       "postproc=True",
                        "zlib=True",
                        "bzlib=True",
                        "lzma=True",
@@ -208,8 +210,7 @@ class FFMpegConan(ConanFile):
             if self.settings.arch == 'x86':
                 args.append('--arch=x86')
 
-            args.append('--disable-postproc')
-
+            args.append('--enable-postproc' if self.options.postproc else '--disable-postproc')
             args.append('--enable-pic' if self.options.fPIC else '--disable-pic')
             args.append('--enable-zlib' if self.options.zlib else '--disable-zlib')
             args.append('--enable-bzlib' if self.options.bzlib else '--disable-bzlib')
@@ -225,7 +226,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libx265' if self.options.x265 else '--disable-libx265')
             args.append('--enable-libvpx' if self.options.vpx else '--disable-libvpx')
 
-            if self.options.x264 or self.options.x265:
+            if self.options.x264 or self.options.x265 or self.options.postproc:
                 args.append('--enable-gpl')
 
             if self.settings.os == "Linux":
@@ -295,6 +296,8 @@ class FFMpegConan(ConanFile):
 
     def package_info(self):
         libs = ['avdevice', 'avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
+        if self.options.postproc:
+            libs.append('postproc')
         if self.settings.compiler == 'Visual Studio':
             if self.options.shared:
                 self.cpp_info.libs = libs
