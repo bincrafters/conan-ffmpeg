@@ -213,6 +213,13 @@ int main() try
     check_encoder("libvpx");
     check_encoder("libvpx-vp9");
 #endif
+#ifdef WITH_MP3LAME
+    check_encoder("libmp3lame");
+#endif
+#ifdef WITH_FDK_AAC
+    check_decoder("libfdk_aac");
+    check_encoder("libfdk_aac");
+#endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)
 {

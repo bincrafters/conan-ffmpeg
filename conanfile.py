@@ -31,6 +31,8 @@ class FFMpegConan(ConanFile):
                "x264": [True, False],
                "x265": [True, False],
                "vpx": [True, False],
+               "mp3lame": [True, False],
+               "fdk_aac": [True, False],
                "alsa": [True, False],
                "jack": [True, False],
                "pulse": [True, False],
@@ -60,6 +62,8 @@ class FFMpegConan(ConanFile):
                        "x264=True",
                        "x265=True",
                        "vpx=True",
+                       "mp3lame=True",
+                       "fdk_aac=True",
                        "alsa=True",
                        "jack=True",
                        "pulse=True",
@@ -140,6 +144,10 @@ class FFMpegConan(ConanFile):
             self.requires.add("libx265/[>=2.6]@bincrafters/stable")
         if self.options.vpx:
             self.requires.add("libvpx/[>=1.6.1]@bincrafters/stable")
+        if self.options.mp3lame:
+            self.requires.add("libmp3lame/[>=3.100]@bincrafters/stable")
+        if self.options.fdk_aac:
+            self.requires.add("libfdk_aac/[>=0.1.5]@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
@@ -225,9 +233,14 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libx264' if self.options.x264 else '--disable-libx264')
             args.append('--enable-libx265' if self.options.x265 else '--disable-libx265')
             args.append('--enable-libvpx' if self.options.vpx else '--disable-libvpx')
+            args.append('--enable-libmp3lame' if self.options.mp3lame else '--disable-mp3lame')
+            args.append('--enable-libfdk-aac' if self.options.fdk_aac else '--disable-fdk-aac')
 
             if self.options.x264 or self.options.x265 or self.options.postproc:
                 args.append('--enable-gpl')
+
+            if self.options.fdk_aac:
+                args.append('--enable-nonfree')
 
             if self.settings.os == "Linux":
                 args.append('--enable-alsa' if self.options.alsa else '--disable-alsa')
@@ -270,6 +283,8 @@ class FFMpegConan(ConanFile):
                 self.copy_pkg_config('libx265')
             if self.options.vpx:
                 self.copy_pkg_config('libvpx')
+            if self.options.fdk_aac:
+                self.copy_pkg_config('libfdk_aac')
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 

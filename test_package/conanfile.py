@@ -22,6 +22,8 @@ class TestPackageConan(ConanFile):
         cmake.definitions['WITH_X264'] = self.options['ffmpeg'].x264
         cmake.definitions['WITH_X265'] = self.options['ffmpeg'].x265
         cmake.definitions['WITH_VPX'] = self.options['ffmpeg'].vpx
+        cmake.definitions['WITH_MP3LAME'] = self.options['ffmpeg'].mp3lame
+        cmake.definitions['WITH_FDK_AAC'] = self.options['ffmpeg'].fdk_aac
 
         if self.settings.os == "Linux":
             cmake.definitions['WITH_VAAPI'] = self.options['ffmpeg'].vaapi
