@@ -146,6 +146,9 @@ int main() try
     check_decoder("libopenjpeg");
     check_encoder("libopenjpeg");
 #endif
+#ifdef WITH_OPENH264
+    check_encoder("libopenh264");
+#endif
 #ifdef WITH_FREETYPE
     check_filter("drawtext");
 #endif

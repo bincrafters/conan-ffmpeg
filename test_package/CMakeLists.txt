@@ -20,6 +20,7 @@ endfunction()
 
 add_option(WITH_POSTPROC)
 add_option(WITH_OPENJPEG)
+add_option(WITH_OPENH264)
 add_option(WITH_FREETYPE)
 add_option(WITH_VAAPI)
 add_option(WITH_VDPAU)

@@ -24,6 +24,7 @@ class FFMpegConan(ConanFile):
                "iconv": [True, False],
                "freetype": [True, False],
                "openjpeg": [True, False],
+               "openh264": [True, False],
                "opus": [True, False],
                "vorbis": [True, False],
                "zmq": [True, False],
@@ -55,6 +56,7 @@ class FFMpegConan(ConanFile):
                        "iconv=True",
                        "freetype=False",
                        "openjpeg=True",
+                       "openh264=True",
                        "opus=False",
                        "vorbis=False",
                        "zmq=True",
@@ -130,6 +132,8 @@ class FFMpegConan(ConanFile):
             self.requires.add("freetype/[>=2.8.1]@bincrafters/stable")
         if self.options.openjpeg:
             self.requires.add("openjpeg/[>=2.3.0]@bincrafters/stable")
+        if self.options.openh264:
+            self.requires.add("openh264/[>=1.7.0]@bincrafters/stable")
         if self.options.vorbis:
             self.requires.add("vorbis/[>=1.3.5]@bincrafters/stable")
         if self.options.opus:
@@ -226,6 +230,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-iconv' if self.options.iconv else '--disable-iconv')
             args.append('--enable-libfreetype' if self.options.freetype else '--disable-libfreetype')
             args.append('--enable-libopenjpeg' if self.options.openjpeg else '--disable-libopenjpeg')
+            args.append('--enable-libopenh264' if self.options.openh264 else '--disable-libopenh264')
             args.append('--enable-libvorbis' if self.options.vorbis else '--disable-libvorbis')
             args.append('--enable-libopus' if self.options.opus else '--disable-libopus')
             args.append('--enable-libzmq' if self.options.zmq else '--disable-libzmq')
@@ -285,6 +290,8 @@ class FFMpegConan(ConanFile):
                 self.copy_pkg_config('libvpx')
             if self.options.fdk_aac:
                 self.copy_pkg_config('libfdk_aac')
+            if self.options.openh264:
+                self.copy_pkg_config('openh264')
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 
