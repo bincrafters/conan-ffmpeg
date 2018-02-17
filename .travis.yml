@@ -53,10 +53,10 @@ matrix:
         env: CONAN_CLANG_VERSIONS=4.0 CONAN_DOCKER_IMAGE=lasote/conanclang40 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Release
       - <<: *osx
         osx_image: xcode7.3
-        env: CONAN_APPLE_CLANG_VERSIONS=7.3-i386 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Debug
+        env: CONAN_APPLE_CLANG_VERSIONS=7.3 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Debug
       - <<: *osx
         osx_image: xcode7.3
-        env: CONAN_APPLE_CLANG_VERSIONS=7.3-i386 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Release
+        env: CONAN_APPLE_CLANG_VERSIONS=7.3 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Release
       - <<: *osx
         osx_image: xcode7.3
         env: CONAN_APPLE_CLANG_VERSIONS=7.3 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Debug
@@ -65,10 +65,10 @@ matrix:
         env: CONAN_APPLE_CLANG_VERSIONS=7.3 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Release
       - <<: *osx
         osx_image: xcode8.3
-        env: CONAN_APPLE_CLANG_VERSIONS=8.1-i386 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Debug
+        env: CONAN_APPLE_CLANG_VERSIONS=8.1 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Debug
       - <<: *osx
         osx_image: xcode8.3
-        env: CONAN_APPLE_CLANG_VERSIONS=8.1-i386 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Release
+        env: CONAN_APPLE_CLANG_VERSIONS=8.1 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Release
       - <<: *osx
         osx_image: xcode8.3
         env: CONAN_APPLE_CLANG_VERSIONS=8.1 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Debug
@@ -77,10 +77,10 @@ matrix:
         env: CONAN_APPLE_CLANG_VERSIONS=8.1 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Release
       - <<: *osx
         osx_image: xcode9
-        env: CONAN_APPLE_CLANG_VERSIONS=9.0-i386 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Debug
+        env: CONAN_APPLE_CLANG_VERSIONS=9.0 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Debug
       - <<: *osx
         osx_image: xcode9
-        env: CONAN_APPLE_CLANG_VERSIONS=9.0-i386 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Release
+        env: CONAN_APPLE_CLANG_VERSIONS=9.0 CONAN_ARCHS=x86 CONAN_BUILD_TYPES=Release
       - <<: *osx
         osx_image: xcode9
         env: CONAN_APPLE_CLANG_VERSIONS=9.0 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Debug
