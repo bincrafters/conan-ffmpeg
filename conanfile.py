@@ -238,8 +238,8 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libx264' if self.options.x264 else '--disable-libx264')
             args.append('--enable-libx265' if self.options.x265 else '--disable-libx265')
             args.append('--enable-libvpx' if self.options.vpx else '--disable-libvpx')
-            args.append('--enable-libmp3lame' if self.options.mp3lame else '--disable-mp3lame')
-            args.append('--enable-libfdk-aac' if self.options.fdk_aac else '--disable-fdk-aac')
+            args.append('--enable-libmp3lame' if self.options.mp3lame else '--disable-libmp3lame')
+            args.append('--enable-libfdk-aac' if self.options.fdk_aac else '--disable-libfdk-aac')
 
             if self.options.x264 or self.options.x265 or self.options.postproc:
                 args.append('--enable-gpl')
