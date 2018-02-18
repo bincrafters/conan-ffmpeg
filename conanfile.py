@@ -115,43 +115,43 @@ class FFMpegConan(ConanFile):
             self.options.remove("securetransport")
 
     def build_requirements(self):
-        self.build_requires("yasm_installer/[>=1.3.0]@bincrafters/stable")
+        self.build_requires("yasm_installer/1.3.0@bincrafters/stable")
         if self.settings.os == 'Windows':
-            self.build_requires("msys2_installer/[>=20161025]@bincrafters/stable")
+            self.build_requires("msys2_installer/latest@bincrafters/stable")
 
     def requirements(self):
         if self.options.zlib:
-            self.requires.add("zlib/[>=1.2.11]@conan/stable")
+            self.requires.add("zlib/1.2.11@conan/stable")
         if self.options.bzlib:
-            self.requires.add("bzip2/[>=1.0.6]@conan/stable")
+            self.requires.add("bzip2/1.0.6@conan/stable")
         if self.options.lzma:
-            self.requires.add("lzma/[>=5.2.3]@bincrafters/stable")
+            self.requires.add("lzma/5.2.3@bincrafters/stable")
         if self.options.iconv:
-            self.requires.add("libiconv/[>=1.15]@bincrafters/stable")
+            self.requires.add("libiconv/1.15@bincrafters/stable")
         if self.options.freetype:
-            self.requires.add("freetype/[>=2.8.1]@bincrafters/stable")
+            self.requires.add("freetype/2.8.1@bincrafters/stable")
         if self.options.openjpeg:
-            self.requires.add("openjpeg/[>=2.3.0]@bincrafters/stable")
+            self.requires.add("openjpeg/2.3.0@bincrafters/stable")
         if self.options.openh264:
-            self.requires.add("openh264/[>=1.7.0]@bincrafters/stable")
+            self.requires.add("openh264/1.7.0@bincrafters/stable")
         if self.options.vorbis:
-            self.requires.add("vorbis/[>=1.3.5]@bincrafters/stable")
+            self.requires.add("vorbis/1.3.5@bincrafters/stable")
         if self.options.opus:
-            self.requires.add("opus/[>=1.2.1]@bincrafters/stable")
+            self.requires.add("opus/1.2.1@bincrafters/stable")
         if self.options.zmq:
-            self.requires.add("zmq/[>=4.2.2]@bincrafters/stable")
+            self.requires.add("zmq/4.2.2@bincrafters/stable")
         if self.options.sdl2:
-            self.requires.add("sdl2/[>=2.0.7]@bincrafters/stable")
+            self.requires.add("sdl2/2.0.7@bincrafters/stable")
         if self.options.x264:
-            self.requires.add("libx264/[>=20171211]@bincrafters/stable")
+            self.requires.add("libx264/20171211@bincrafters/stable")
         if self.options.x265:
-            self.requires.add("libx265/[>=2.6]@bincrafters/stable")
+            self.requires.add("libx265/2.6@bincrafters/stable")
         if self.options.vpx:
-            self.requires.add("libvpx/[>=1.6.1]@bincrafters/stable")
+            self.requires.add("libvpx/1.6.1@bincrafters/stable")
         if self.options.mp3lame:
-            self.requires.add("libmp3lame/[>=3.100]@bincrafters/stable")
+            self.requires.add("libmp3lame/3.100@bincrafters/stable")
         if self.options.fdk_aac:
-            self.requires.add("libfdk_aac/[>=0.1.5]@bincrafters/stable")
+            self.requires.add("libfdk_aac/0.1.5@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
