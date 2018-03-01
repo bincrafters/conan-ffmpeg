@@ -269,6 +269,9 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-vda' if self.options.vda else '--disable-vda')
                 args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
 
+            # FIXME disable CUDA and CUVID by default, revisit later
+            args.extend(['--disable-cuda', '--disable-cuvid'])
+
             os.makedirs('pkgconfig')
             if self.options.freetype:
                 self.copy_pkg_config('freetype')
