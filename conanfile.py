@@ -300,6 +300,8 @@ class FFMpegConan(ConanFile):
 
             if self.settings.compiler == 'Visual Studio':
                 args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
+                if int(str(self.settings.compiler.version)) <= 12:
+                    args.append('--extra-cflags=-Dsnprintf=_snprintf')
 
             with tools.environment_append(env_vars):
                 env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw or self.is_msvc)
