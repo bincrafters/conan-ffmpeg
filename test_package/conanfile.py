@@ -43,6 +43,9 @@ class TestPackageConan(ConanFile):
             cmake.definitions['WITH_VDA'] = self.options['ffmpeg'].vda
             cmake.definitions['WITH_SECURETRANSPORT'] = self.options['ffmpeg'].securetransport
 
+        if self.settings.os == "Windows":
+            cmake.definitions['WITH_QSV'] = self.options['ffmpeg'].qsv
+
         cmake.configure()
         cmake.build()
 
