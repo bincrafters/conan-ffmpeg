@@ -223,6 +223,19 @@ int main() try
     check_decoder("libfdk_aac");
     check_encoder("libfdk_aac");
 #endif
+#ifdef WITH_QSV
+    check_hwaccel("qsv");
+    check_decoder("mpeg2_qsv");
+    check_decoder("h264_qsv");
+    check_decoder("hevc_qsv");
+    check_decoder("vc1_qsv");
+    check_decoder("vp8_qsv");
+    check_encoder("mpeg2_qsv");
+    check_encoder("h264_qsv");
+    check_encoder("hevc_qsv");
+    check_filter("deinterlace_qsv");
+    check_filter("scale_qsv");
+#endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)
 {

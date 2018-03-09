@@ -46,7 +46,8 @@ class FFMpegConan(ConanFile):
                "audiotoolbox": [True, False],
                "videotoolbox": [True, False],
                "vda": [True, False],
-               "securetransport": [True, False]}
+               "securetransport": [True, False],
+               "qsv": [True, False]}
     default_options = ("shared=False",
                        "fPIC=True",
                        "postproc=True",
@@ -78,7 +79,8 @@ class FFMpegConan(ConanFile):
                        "audiotoolbox=True",
                        "videotoolbox=True",
                        "vda=False",
-                       "securetransport=True")
+                       "securetransport=True",
+                       "qsv=True")
 
     @property
     def is_mingw(self):
@@ -113,6 +115,8 @@ class FFMpegConan(ConanFile):
             self.options.remove("videotoolbox")
             self.options.remove("vda")
             self.options.remove("securetransport")
+        if self.settings.os != "Windows":
+            self.options.remove("qsv")
 
     def build_requirements(self):
         self.build_requires("yasm_installer/1.3.0@bincrafters/stable")
@@ -152,6 +156,9 @@ class FFMpegConan(ConanFile):
             self.requires.add("libmp3lame/3.100@bincrafters/stable")
         if self.options.fdk_aac:
             self.requires.add("libfdk_aac/0.1.5@bincrafters/stable")
+        if self.settings.os == "Windows":
+            if self.options.qsv:
+                self.requires.add("intel_media_sdk/2017R1@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
@@ -268,6 +275,9 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-videotoolbox' if self.options.videotoolbox else '--disable-videotoolbox')
                 args.append('--enable-vda' if self.options.vda else '--disable-vda')
                 args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
+
+            if self.settings.os == "Windows":
+                args.append('--enable-libmfx')
 
             # FIXME disable CUDA and CUVID by default, revisit later
             args.extend(['--disable-cuda', '--disable-cuvid'])
