@@ -277,7 +277,7 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
 
             if self.settings.os == "Windows":
-                args.append('--enable-libmfx')
+                args.append('--enable-libmfx' if self.options.qsv else '--disable-libmfx')
 
             # FIXME disable CUDA and CUVID by default, revisit later
             args.extend(['--disable-cuda', '--disable-cuvid'])
