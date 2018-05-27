@@ -177,9 +177,6 @@ int main() try
 #ifdef WITH_VIDEOTOOLBOX
     check_hwaccel("videotoolbox");
 #endif
-#ifdef WITH_VDA
-    check_hwaccel("h264_vda");
-#endif
 #ifdef WITH_SECURETRANSPORT
     check_protocol("tls");
 #endif
@@ -193,9 +190,6 @@ int main() try
 #ifdef WITH_ALSA
     check_input_device("alsa");
     check_output_device("alsa");
-#endif
-#ifdef WITH_JACK
-    check_input_device("jack");
 #endif
 #ifdef WITH_PULSE
     check_input_device("pulse");

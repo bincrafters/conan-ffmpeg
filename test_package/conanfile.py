@@ -31,7 +31,6 @@ class TestPackageConan(ConanFile):
             cmake.definitions['WITH_VDPAU'] = self.options['ffmpeg'].vdpau
             cmake.definitions['WITH_XCB'] = self.options['ffmpeg'].xcb
             cmake.definitions['WITH_ALSA'] = self.options['ffmpeg'].alsa
-            cmake.definitions['WITH_JACK'] = self.options['ffmpeg'].jack
             cmake.definitions['WITH_PULSE'] = self.options['ffmpeg'].pulse
 
         if self.settings.os == "Macos":
@@ -40,7 +39,6 @@ class TestPackageConan(ConanFile):
             cmake.definitions['WITH_COREIMAGE'] = self.options['ffmpeg'].coreimage
             cmake.definitions['WITH_AUDIOTOOLBOX'] = self.options['ffmpeg'].audiotoolbox
             cmake.definitions['WITH_VIDEOTOOLBOX'] = self.options['ffmpeg'].videotoolbox
-            cmake.definitions['WITH_VDA'] = self.options['ffmpeg'].vda
             cmake.definitions['WITH_SECURETRANSPORT'] = self.options['ffmpeg'].securetransport
 
         if self.settings.os == "Windows":

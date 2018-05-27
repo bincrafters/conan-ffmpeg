@@ -35,7 +35,6 @@ class FFMpegConan(ConanFile):
                "mp3lame": [True, False],
                "fdk_aac": [True, False],
                "alsa": [True, False],
-               "jack": [True, False],
                "pulse": [True, False],
                "vaapi": [True, False],
                "vdpau": [True, False],
@@ -45,7 +44,6 @@ class FFMpegConan(ConanFile):
                "coreimage": [True, False],
                "audiotoolbox": [True, False],
                "videotoolbox": [True, False],
-               "vda": [True, False],
                "securetransport": [True, False],
                "qsv": [True, False]}
     default_options = ("shared=False",
@@ -68,7 +66,6 @@ class FFMpegConan(ConanFile):
                        "mp3lame=False",
                        "fdk_aac=False",
                        "alsa=True",
-                       "jack=True",
                        "pulse=True",
                        "vaapi=True",
                        "vdpau=True",
@@ -78,7 +75,6 @@ class FFMpegConan(ConanFile):
                        "coreimage=True",
                        "audiotoolbox=True",
                        "videotoolbox=True",
-                       "vda=False",
                        "securetransport=True",
                        "qsv=True")
 
@@ -105,7 +101,6 @@ class FFMpegConan(ConanFile):
             self.options.remove("vdpau")
             self.options.remove("xcb")
             self.options.remove("alsa")
-            self.options.remove("jack")
             self.options.remove("pulse")
         if self.settings.os != "Macos":
             self.options.remove("appkit")
@@ -113,7 +108,6 @@ class FFMpegConan(ConanFile):
             self.options.remove("coreimage")
             self.options.remove("audiotoolbox")
             self.options.remove("videotoolbox")
-            self.options.remove("vda")
             self.options.remove("securetransport")
         if self.settings.os != "Windows":
             self.options.remove("qsv")
@@ -173,8 +167,6 @@ class FFMpegConan(ConanFile):
                 packages = ['pkg-config']
                 if self.options.alsa:
                     packages.append('libasound2-dev%s' % arch_suffix)
-                if self.options.jack:
-                    packages.append('libjack-dev%s' % arch_suffix)
                 if self.options.pulse:
                     packages.append('libpulse-dev%s' % arch_suffix)
                 if self.options.vaapi:
@@ -256,7 +248,6 @@ class FFMpegConan(ConanFile):
 
             if self.settings.os == "Linux":
                 args.append('--enable-alsa' if self.options.alsa else '--disable-alsa')
-                args.append('--enable-jack' if self.options.jack else '--disable-jack')
                 args.append('--enable-libpulse' if self.options.pulse else '--disable-libpulse')
                 args.append('--enable-vaapi' if self.options.vaapi else '--disable-vaapi')
                 args.append('--enable-vdpau' if self.options.vdpau else '--disable-vdpau')
@@ -273,7 +264,6 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-coreimage' if self.options.avfoundation else '--disable-coreimage')
                 args.append('--enable-audiotoolbox' if self.options.audiotoolbox else '--disable-audiotoolbox')
                 args.append('--enable-videotoolbox' if self.options.videotoolbox else '--disable-videotoolbox')
-                args.append('--enable-vda' if self.options.vda else '--disable-vda')
                 args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
 
             if self.settings.os == "Windows":
@@ -353,8 +343,6 @@ class FFMpegConan(ConanFile):
                 frameworks.append('AudioToolbox')
             if self.options.videotoolbox:
                 frameworks.append('VideoToolbox')
-            if self.options.vda:
-                frameworks.append('VideoDecodeAcceleration')
             if self.options.securetransport:
                 frameworks.append('Security')
             for framework in frameworks:
@@ -364,8 +352,6 @@ class FFMpegConan(ConanFile):
             self.cpp_info.libs.extend(['dl', 'pthread'])
             if self.options.alsa:
                 self.cpp_info.libs.append('asound')
-            if self.options.jack:
-                self.cpp_info.libs.append('jack')
             if self.options.pulse:
                 self.cpp_info.libs.append('pulse')
             if self.options.vaapi:
