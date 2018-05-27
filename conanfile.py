@@ -54,7 +54,7 @@ class FFMpegConan(ConanFile):
                        "zlib=False",
                        "bzlib=False",
                        "lzma=False",
-                       "iconv=False",
+                       "iconv=True",
                        "freetype=False",
                        "openjpeg=False",
                        "openh264=False",
