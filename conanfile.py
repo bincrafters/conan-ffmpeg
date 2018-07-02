@@ -180,6 +180,26 @@ class FFMpegConan(ConanFile):
                                      'libxcb-xfixes0-dev%s' % arch_suffix])
                 for package in packages:
                     installer.install(package)
+            elif tools.os_info.with_yum:
+                installer = tools.SystemPackageTool()
+                arch_suffix = ''
+                if self.settings.arch == "x86":
+                    arch_suffix = '.i686'
+                elif self.settings.arch == "x86_64":
+                    arch_suffix = '.x86_64'
+                packages = ['pkgconfig']
+                if self.options.alsa:
+                    packages.append('alsa-lib-devel%s' % arch_suffix)
+                if self.options.pulse:
+                    packages.append('pulseaudio-libs-devel%s' % arch_suffix)
+                if self.options.vaapi:
+                    packages.append('libva-devel%s' % arch_suffix)
+                if self.options.vdpau:
+                    packages.append('libvdpau-devel%s' % arch_suffix)
+                if self.options.xcb:
+                    packages.append('libxcb-devel%s' % arch_suffix)
+                for package in packages:
+                    installer.install(package)
 
     def copy_pkg_config(self, name):
         root = self.deps_cpp_info[name].rootpath
@@ -204,7 +224,25 @@ class FFMpegConan(ConanFile):
         else:
             self.build_configure()
 
+    def check_pkg_config(self, option, package_name):
+        if option:
+            pkg_config = tools.PkgConfig(package_name)
+            if not pkg_config.provides:
+                raise Exception('package %s is not available' % package_name)
+
+    def check_dependencies(self):
+        if self.settings.os == 'Linux':
+            self.check_pkg_config(self.options.alsa, 'alsa')
+            self.check_pkg_config(self.options.pulse, 'libpulse')
+            self.check_pkg_config(self.options.vaapi, 'libva')
+            self.check_pkg_config(self.options.vdpau, 'vdpau')
+            self.check_pkg_config(self.options.xcb, 'xcb')
+            self.check_pkg_config(self.options.xcb, 'xcb-shm')
+            self.check_pkg_config(self.options.xcb, 'xcb-shape')
+            self.check_pkg_config(self.options.xcb, 'xcb-xfixes')
+
     def build_configure(self):
+        self.check_dependencies()
         with tools.chdir('sources'):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
