@@ -336,7 +336,9 @@ class FFMpegConan(ConanFile):
             if self.options.openjpeg:
                 self.copy_pkg_config('openjpeg')
 
-            env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
+            pkg_config_path = os.path.abspath('pkgconfig')
+            pkg_config_path = tools.unix_path(pkg_config_path) if self.settings.os == 'Windows' else pkg_config_path
+            env_vars = {'PKG_CONFIG_PATH': pkg_config_path}
 
             if self.is_msvc:
                 args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
