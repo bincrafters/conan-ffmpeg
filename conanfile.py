@@ -295,6 +295,8 @@ class FFMpegConan(ConanFile):
                 self.copy_pkg_config('libfdk_aac')
             if self.options.openh264:
                 self.copy_pkg_config('openh264')
+            if self.options.openjpeg:
+                self.copy_pkg_config('openjpeg')
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 
