@@ -216,7 +216,7 @@ class FFMpegConan(ConanFile):
                 args.extend(['--disable-shared', '--enable-static', '--pkg-config-flags=--static'])
             if self.settings.build_type == 'Debug':
                 args.extend(['--disable-optimizations', '--disable-mmx', '--disable-stripping', '--enable-debug'])
-            if self.settings.compiler == 'Visual Studio':
+            if self.is_msvc:
                 args.append('--toolchain=msvc')
             if self.settings.arch == 'x86':
                 args.append('--arch=x86')
@@ -298,7 +298,7 @@ class FFMpegConan(ConanFile):
 
             env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
 
-            if self.settings.compiler == 'Visual Studio':
+            if self.is_msvc:
                 args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
 
             with tools.environment_append(env_vars):
@@ -312,7 +312,7 @@ class FFMpegConan(ConanFile):
     def package(self):
         with tools.chdir("sources"):
             self.copy(pattern="LICENSE")
-        if self.settings.compiler == 'Visual Studio' and not self.options.shared:
+        if self.is_msvc and not self.options.shared:
             # ffmpeg produces .a files which are actually .lib files
             with tools.chdir(os.path.join(self.package_folder, 'lib')):
                 libs = glob.glob('*.a')
@@ -323,7 +323,7 @@ class FFMpegConan(ConanFile):
         libs = ['avdevice', 'avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
         if self.options.postproc:
             libs.append('postproc')
-        if self.settings.compiler == 'Visual Studio':
+        if self.is_msvc:
             if self.options.shared:
                 self.cpp_info.libs = libs
                 self.cpp_info.libdirs.append('bin')
