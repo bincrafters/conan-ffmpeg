@@ -79,8 +79,8 @@ class FFMpegConan(ConanFile):
                        "qsv=True")
 
     @property
-    def is_mingw(self):
-        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc'
+    def is_mingw_windows(self):
+        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc' and os.name == 'nt'
 
     @property
     def is_msvc(self):
@@ -192,7 +192,7 @@ class FFMpegConan(ConanFile):
             tools.replace_prefix_in_pc_file(new_pc, root)
 
     def build(self):
-        if self.is_msvc or self.is_mingw:
+        if self.is_msvc or self.is_mingw_windows:
             msys_bin = self.deps_env_info['msys2_installer'].MSYS_BIN
             with tools.environment_append({'PATH': [msys_bin],
                                            'CONAN_BASH_PATH': os.path.join(msys_bin, 'bash.exe')}):
@@ -306,7 +306,7 @@ class FFMpegConan(ConanFile):
                 args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
 
             try:
-                if self.is_msvc or self.is_mingw:
+                if self.is_msvc or self.is_mingw_windows:
                     # hack for MSYS2 which doesn't inherit PKG_CONFIG_PATH
                     for filename in ['.bashrc', '.bash_profile', '.profile']:
                         tools.run_in_windows_bash(self, 'cp ~/%s ~/%s.bak' % (filename, filename))
@@ -315,14 +315,14 @@ class FFMpegConan(ConanFile):
                         tools.run_in_windows_bash(self, command)
 
                 with tools.environment_append(env_vars):
-                    env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw or self.is_msvc)
+                    env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw_windows or self.is_msvc)
                     # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
                     # --host, --build, --target
                     env_build.configure(args=args, build=False, host=False, target=False)
                     env_build.make()
                     env_build.make(args=['install'])
             finally:
-                if self.is_msvc or self.is_mingw:
+                if self.is_msvc or self.is_mingw_windows:
                     for filename in ['.bashrc', '.bash_profile', '.profile']:
                         tools.run_in_windows_bash(self, 'cp ~/%s.bak ~/%s' % (filename, filename))
                         tools.run_in_windows_bash(self, 'rm -f ~/%s.bak' % filename)
