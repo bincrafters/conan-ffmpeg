@@ -251,7 +251,8 @@ class FFMpegConan(ConanFile):
             if self.options.shared:
                 args.extend(['--disable-static', '--enable-shared'])
             else:
-                args.extend(['--disable-shared', '--enable-static', '--pkg-config-flags=--static'])
+                args.extend(['--disable-shared', '--enable-static'])
+            args.append('--pkg-config-flags=--static')
             if self.settings.build_type == 'Debug':
                 args.extend(['--disable-optimizations', '--disable-mmx', '--disable-stripping', '--enable-debug'])
             if self.is_msvc:
