@@ -133,7 +133,7 @@ class FFMpegConan(ConanFile):
         if self.options.openh264:
             self.requires.add("openh264/1.7.0@bincrafters/stable")
         if self.options.vorbis:
-            self.requires.add("vorbis/1.3.5@bincrafters/stable")
+            self.requires.add("vorbis/1.3.6@bincrafters/stable")
         if self.options.opus:
             self.requires.add("opus/1.2.1@bincrafters/stable")
         if self.options.zmq:
