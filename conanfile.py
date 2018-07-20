@@ -301,7 +301,6 @@ class FFMpegConan(ConanFile):
 
             pkg_config_path = os.path.abspath('pkgconfig')
             pkg_config_path = tools.unix_path(pkg_config_path) if self.settings.os == 'Windows' else pkg_config_path
-            env_vars = {'PKG_CONFIG_PATH': pkg_config_path}
 
             if self.is_msvc:
                 args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
@@ -315,13 +314,13 @@ class FFMpegConan(ConanFile):
                                   % (pkg_config_path, filename)
                         tools.run_in_windows_bash(self, command)
 
-                with tools.environment_append(env_vars):
-                    env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw_windows or self.is_msvc)
-                    # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
-                    # --host, --build, --target
-                    env_build.configure(args=args, build=False, host=False, target=False)
-                    env_build.make()
-                    env_build.make(args=['install'])
+                env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw_windows or self.is_msvc)
+                # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
+                # --host, --build, --target
+                env_build.configure(args=args, build=False, host=False, target=False,
+                                    pkg_config_paths=[pkg_config_path])
+                env_build.make()
+                env_build.make(args=['install'])
             finally:
                 if self.is_msvc or self.is_mingw_windows:
                     for filename in ['.bashrc', '.bash_profile', '.profile']:
