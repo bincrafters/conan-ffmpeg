@@ -49,22 +49,22 @@ class FFMpegConan(ConanFile):
     default_options = ("shared=False",
                        "fPIC=True",
                        "postproc=True",
-                       "zlib=False",
-                       "bzlib=False",
-                       "lzma=False",
+                       "zlib=True",
+                       "bzlib=True",
+                       "lzma=True",
                        "iconv=True",
                        "freetype=False",
-                       "openjpeg=False",
-                       "openh264=False",
-                       "opus=False",
-                       "vorbis=False",
+                       "openjpeg=True",
+                       "openh264=True",
+                       "opus=True",
+                       "vorbis=True",
                        "zmq=False",
                        "sdl2=False",
-                       "x264=False",
-                       "x265=False",
-                       "vpx=False",
-                       "mp3lame=False",
-                       "fdk_aac=False",
+                       "x264=True",
+                       "x265=True",
+                       "vpx=True",
+                       "mp3lame=True",
+                       "fdk_aac=True",
                        "alsa=True",
                        "pulse=True",
                        "vaapi=True",
@@ -79,8 +79,8 @@ class FFMpegConan(ConanFile):
                        "qsv=True")
 
     @property
-    def is_mingw(self):
-        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc'
+    def is_mingw_windows(self):
+        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc' and os.name == 'nt'
 
     @property
     def is_msvc(self):
@@ -133,7 +133,7 @@ class FFMpegConan(ConanFile):
         if self.options.openh264:
             self.requires.add("openh264/1.7.0@bincrafters/stable")
         if self.options.vorbis:
-            self.requires.add("vorbis/1.3.5@bincrafters/stable")
+            self.requires.add("vorbis/1.3.6@bincrafters/stable")
         if self.options.opus:
             self.requires.add("opus/1.2.1@bincrafters/stable")
         if self.options.zmq:
@@ -143,9 +143,9 @@ class FFMpegConan(ConanFile):
         if self.options.x264:
             self.requires.add("libx264/20171211@bincrafters/stable")
         if self.options.x265:
-            self.requires.add("libx265/2.6@bincrafters/stable")
+            self.requires.add("libx265/2.7@bincrafters/stable")
         if self.options.vpx:
-            self.requires.add("libvpx/1.6.1@bincrafters/stable")
+            self.requires.add("libvpx/1.7.0@bincrafters/stable")
         if self.options.mp3lame:
             self.requires.add("libmp3lame/3.100@bincrafters/stable")
         if self.options.fdk_aac:
@@ -209,10 +209,11 @@ class FFMpegConan(ConanFile):
             new_pc = os.path.join('pkgconfig', os.path.basename(pc_name))
             self.output.warn('copy .pc file %s' % os.path.basename(pc_name))
             shutil.copy(pc_name, new_pc)
-            tools.replace_prefix_in_pc_file(new_pc, root)
+            prefix = tools.unix_path(root) if self.settings.os == 'Windows' else root
+            tools.replace_prefix_in_pc_file(new_pc, prefix)
 
     def build(self):
-        if self.is_msvc or self.is_mingw:
+        if self.is_msvc or self.is_mingw_windows:
             msys_bin = self.deps_env_info['msys2_installer'].MSYS_BIN
             with tools.environment_append({'PATH': [msys_bin],
                                            'CONAN_BASH_PATH': os.path.join(msys_bin, 'bash.exe')}):
@@ -251,11 +252,17 @@ class FFMpegConan(ConanFile):
             if self.options.shared:
                 args.extend(['--disable-static', '--enable-shared'])
             else:
-                args.extend(['--disable-shared', '--enable-static', '--pkg-config-flags=--static'])
+                args.extend(['--disable-shared', '--enable-static'])
+            args.append('--pkg-config-flags=--static')
             if self.settings.build_type == 'Debug':
                 args.extend(['--disable-optimizations', '--disable-mmx', '--disable-stripping', '--enable-debug'])
-            if self.settings.compiler == 'Visual Studio':
+            if self.is_msvc:
                 args.append('--toolchain=msvc')
+                args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
+                if int(str(self.settings.compiler.version)) <= 12:
+                    # Visual Studio 2013 (and earlier) doesn't support "inline" keyword for C (only for C++)
+                    args.append('--extra-cflags=-Dinline=__inline' % self.settings.compiler.runtime)
+
             if self.settings.arch == 'x86':
                 args.append('--arch=x86')
 
@@ -333,24 +340,38 @@ class FFMpegConan(ConanFile):
                 self.copy_pkg_config('libfdk_aac')
             if self.options.openh264:
                 self.copy_pkg_config('openh264')
+            if self.options.openjpeg:
+                self.copy_pkg_config('openjpeg')
 
-            env_vars = {'PKG_CONFIG_PATH': os.path.abspath('pkgconfig')}
+            pkg_config_path = os.path.abspath('pkgconfig')
+            pkg_config_path = tools.unix_path(pkg_config_path) if self.settings.os == 'Windows' else pkg_config_path
 
-            if self.settings.compiler == 'Visual Studio':
-                args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
+            try:
+                if self.is_msvc or self.is_mingw_windows:
+                    # hack for MSYS2 which doesn't inherit PKG_CONFIG_PATH
+                    for filename in ['.bashrc', '.bash_profile', '.profile']:
+                        tools.run_in_windows_bash(self, 'cp ~/%s ~/%s.bak' % (filename, filename))
+                        command = 'echo "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:%s" >> ~/%s'\
+                                  % (pkg_config_path, filename)
+                        tools.run_in_windows_bash(self, command)
 
-            with tools.environment_append(env_vars):
-                env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw or self.is_msvc)
+                env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw_windows or self.is_msvc)
                 # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
                 # --host, --build, --target
-                env_build.configure(args=args, build=False, host=False, target=False)
+                env_build.configure(args=args, build=False, host=False, target=False,
+                                    pkg_config_paths=[pkg_config_path])
                 env_build.make()
                 env_build.make(args=['install'])
+            finally:
+                if self.is_msvc or self.is_mingw_windows:
+                    for filename in ['.bashrc', '.bash_profile', '.profile']:
+                        tools.run_in_windows_bash(self, 'cp ~/%s.bak ~/%s' % (filename, filename))
+                        tools.run_in_windows_bash(self, 'rm -f ~/%s.bak' % filename)
 
     def package(self):
         with tools.chdir("sources"):
             self.copy(pattern="LICENSE")
-        if self.settings.compiler == 'Visual Studio' and not self.options.shared:
+        if self.is_msvc and not self.options.shared:
             # ffmpeg produces .a files which are actually .lib files
             with tools.chdir(os.path.join(self.package_folder, 'lib')):
                 libs = glob.glob('*.a')
@@ -361,7 +382,7 @@ class FFMpegConan(ConanFile):
         libs = ['avdevice', 'avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
         if self.options.postproc:
             libs.append('postproc')
-        if self.settings.compiler == 'Visual Studio':
+        if self.is_msvc:
             if self.options.shared:
                 self.cpp_info.libs = libs
                 self.cpp_info.libdirs.append('bin')
