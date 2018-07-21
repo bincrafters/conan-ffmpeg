@@ -231,6 +231,11 @@ class FFMpegConan(ConanFile):
                 args.extend(['--disable-optimizations', '--disable-mmx', '--disable-stripping', '--enable-debug'])
             if self.is_msvc:
                 args.append('--toolchain=msvc')
+                args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
+                if int(str(self.settings.compiler.version)) <= 12:
+                    # Visual Studio 2013 (and earlier) doesn't support "inline" keyword for C (only for C++)
+                    args.append('--extra-cflags=-Dinline=__inline' % self.settings.compiler.runtime)
+
             if self.settings.arch == 'x86':
                 args.append('--arch=x86')
 
@@ -316,9 +321,6 @@ class FFMpegConan(ConanFile):
 
             pkg_config_path = os.path.abspath('pkgconfig')
             pkg_config_path = tools.unix_path(pkg_config_path) if self.settings.os == 'Windows' else pkg_config_path
-
-            if self.is_msvc:
-                args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
 
             try:
                 if self.is_msvc or self.is_mingw_windows:
