@@ -92,6 +92,13 @@ class FFMpegConan(ConanFile):
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
 
+        if self.is_msvc and self.options.x264 and not self.options['x264'].shared:
+            # suppress MSVC linker warnings: https://trac.ffmpeg.org/ticket/7396
+            # warning LNK4049: locally defined symbol x264_levels imported
+            # warning LNK4049: locally defined symbol x264_bit_depth imported
+            tools.replace_in_file(os.path.join('sources', 'libavcodec', 'libx264.c'),
+                                  '#define X264_API_IMPORTS 1', '')
+
     def configure(self):
         del self.settings.compiler.libcxx
 
