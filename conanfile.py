@@ -159,7 +159,7 @@ class FFMpegConan(ConanFile):
             self.requires.add("libfdk_aac/0.1.5@bincrafters/stable")
         if self.settings.os == "Windows":
             if self.options.qsv:
-                self.requires.add("intel_media_sdk/2017R1@bincrafters/stable")
+                self.requires.add("intel_media_sdk/2018R2@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
