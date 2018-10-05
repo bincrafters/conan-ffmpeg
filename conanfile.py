@@ -34,6 +34,7 @@ class FFMpegConan(ConanFile):
                "vpx": [True, False],
                "mp3lame": [True, False],
                "fdk_aac": [True, False],
+               "webp": [True, False],
                "alsa": [True, False],
                "pulse": [True, False],
                "vaapi": [True, False],
@@ -65,6 +66,7 @@ class FFMpegConan(ConanFile):
                        "vpx=True",
                        "mp3lame=True",
                        "fdk_aac=True",
+                       "webp=True",
                        "alsa=True",
                        "pulse=True",
                        "vaapi=True",
@@ -157,6 +159,8 @@ class FFMpegConan(ConanFile):
             self.requires.add("libmp3lame/3.100@bincrafters/stable")
         if self.options.fdk_aac:
             self.requires.add("libfdk_aac/0.1.5@bincrafters/stable")
+        if self.options.webp:
+            self.requires.add("libwebp/1.0.0@bincrafters/stable")
         if self.settings.os == "Windows":
             if self.options.qsv:
                 self.requires.add("intel_media_sdk/2018R2@bincrafters/stable")
@@ -248,6 +252,7 @@ class FFMpegConan(ConanFile):
             args.append('--enable-libvpx' if self.options.vpx else '--disable-libvpx')
             args.append('--enable-libmp3lame' if self.options.mp3lame else '--disable-libmp3lame')
             args.append('--enable-libfdk-aac' if self.options.fdk_aac else '--disable-libfdk-aac')
+            args.append('--enable-libwebp' if self.options.webp else '--disable-libwebp')
 
             if self.options.x264 or self.options.x265 or self.options.postproc:
                 args.append('--enable-gpl')
@@ -306,6 +311,8 @@ class FFMpegConan(ConanFile):
                 self.copy_pkg_config('openh264')
             if self.options.openjpeg:
                 self.copy_pkg_config('openjpeg')
+            if self.options.webp:
+                self.copy_pkg_config('libwebp')
 
             pkg_config_path = os.path.abspath('pkgconfig')
             pkg_config_path = tools.unix_path(pkg_config_path) if self.settings.os == 'Windows' else pkg_config_path
