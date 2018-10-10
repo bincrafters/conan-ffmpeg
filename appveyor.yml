@@ -16,6 +16,15 @@ environment:
           CONAN_ARCHS: x86
           CONAN_BUILD_TYPES: Debug
           CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 12
+          CONAN_ARCHS: x86
+          CONAN_BUILD_TYPES: Debug
+          CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 12
           CONAN_ARCHS: x86
@@ -26,6 +35,15 @@ environment:
           CONAN_ARCHS: x86
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 12
+          CONAN_ARCHS: x86
+          CONAN_BUILD_TYPES: Release
+          CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 12
           CONAN_ARCHS: x86_64
@@ -36,6 +54,15 @@ environment:
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Debug
           CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 12
+          CONAN_ARCHS: x86_64
+          CONAN_BUILD_TYPES: Debug
+          CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 12
           CONAN_ARCHS: x86_64
@@ -46,6 +73,15 @@ environment:
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 12
+          CONAN_ARCHS: x86_64
+          CONAN_BUILD_TYPES: Release
+          CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 14
           CONAN_ARCHS: x86
@@ -56,6 +92,15 @@ environment:
           CONAN_ARCHS: x86
           CONAN_BUILD_TYPES: Debug
           CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_ARCHS: x86
+          CONAN_BUILD_TYPES: Debug
+          CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 14
           CONAN_ARCHS: x86
@@ -66,6 +111,15 @@ environment:
           CONAN_ARCHS: x86
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_ARCHS: x86
+          CONAN_BUILD_TYPES: Release
+          CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 14
           CONAN_ARCHS: x86_64
@@ -76,6 +130,15 @@ environment:
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Debug
           CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_ARCHS: x86_64
+          CONAN_BUILD_TYPES: Debug
+          CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 14
           CONAN_ARCHS: x86_64
@@ -86,6 +149,15 @@ environment:
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_ARCHS: x86_64
+          CONAN_BUILD_TYPES: Release
+          CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           CONAN_VISUAL_VERSIONS: 15
           CONAN_ARCHS: x86
@@ -96,6 +168,15 @@ environment:
           CONAN_ARCHS: x86
           CONAN_BUILD_TYPES: Debug
           CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_ARCHS: x86
+          CONAN_BUILD_TYPES: Debug
+          CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           CONAN_VISUAL_VERSIONS: 15
           CONAN_ARCHS: x86
@@ -106,6 +187,15 @@ environment:
           CONAN_ARCHS: x86
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_ARCHS: x86
+          CONAN_BUILD_TYPES: Release
+          CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           CONAN_VISUAL_VERSIONS: 15
           CONAN_ARCHS: x86_64
@@ -116,6 +206,15 @@ environment:
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Debug
           CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_ARCHS: x86_64
+          CONAN_BUILD_TYPES: Debug
+          CONAN_VISUAL_RUNTIMES: MDd
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           CONAN_VISUAL_VERSIONS: 15
           CONAN_ARCHS: x86_64
@@ -126,6 +225,15 @@ environment:
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_ARCHS: x86_64
+          CONAN_BUILD_TYPES: Release
+          CONAN_VISUAL_RUNTIMES: MD
+          CONAN_TOTAL_PAGES: 2
+          CONAN_CURRENT_PAGE: 2
 
 install:
   - set PATH=%PATH%;%PYTHON%/Scripts/
