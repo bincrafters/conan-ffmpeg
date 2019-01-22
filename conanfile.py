@@ -396,5 +396,10 @@ class FFMpegConan(ConanFile):
                 self.cpp_info.libs.extend(['vdpau', 'X11'])
             if self.options.xcb:
                 self.cpp_info.libs.extend(['xcb', 'xcb-shm', 'xcb-shape', 'xcb-xfixes'])
+            if self.options.fPIC:
+                # https://trac.ffmpeg.org/ticket/1713
+                # https://ffmpeg.org/platform.html#Advanced-linking-configuration
+                # https://ffmpeg.org/pipermail/libav-user/2014-December/007719.html
+                self.cpp_info.sharedlinkflags.append("-Wl,-Bsymbolic")
         elif self.settings.os == "Windows":
             self.cpp_info.libs.extend(['ws2_32', 'secur32', 'shlwapi', 'strmiids', 'vfw32', 'bcrypt'])
