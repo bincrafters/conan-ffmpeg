@@ -111,6 +111,8 @@ class FFMpegConan(ConanFile):
         del self.settings.compiler.libcxx
 
     def config_options(self):
+        if self.settings.os == "Windows":
+            del self.options.fPIC
         if self.settings.os != "Linux":
             self.options.remove("vaapi")
             self.options.remove("vdpau")
@@ -245,8 +247,10 @@ class FFMpegConan(ConanFile):
             if self.settings.arch == 'x86':
                 args.append('--arch=x86')
 
+            if self.settings.os != "Windows":
+                args.append('--enable-pic' if self.options.fPIC else '--disable-pic')
+
             args.append('--enable-postproc' if self.options.postproc else '--disable-postproc')
-            args.append('--enable-pic' if self.options.fPIC else '--disable-pic')
             args.append('--enable-zlib' if self.options.zlib else '--disable-zlib')
             args.append('--enable-bzlib' if self.options.bzlib else '--disable-bzlib')
             args.append('--enable-lzma' if self.options.lzma else '--disable-lzma')
@@ -401,7 +405,7 @@ class FFMpegConan(ConanFile):
                 self.cpp_info.libs.extend(['vdpau', 'X11'])
             if self.options.xcb:
                 self.cpp_info.libs.extend(['xcb', 'xcb-shm', 'xcb-shape', 'xcb-xfixes'])
-            if self.options.fPIC:
+            if self.settings.os != "Windows" and self.options.fPIC:
                 # https://trac.ffmpeg.org/ticket/1713
                 # https://ffmpeg.org/platform.html#Advanced-linking-configuration
                 # https://ffmpeg.org/pipermail/libav-user/2014-December/007719.html
