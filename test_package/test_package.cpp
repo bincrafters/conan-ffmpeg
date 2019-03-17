@@ -180,6 +180,9 @@ int main() try
 #ifdef WITH_SECURETRANSPORT
     check_protocol("tls");
 #endif
+#ifdef WITH_OPENSSL
+    check_protocol("tls");
+#endif
 #ifdef WITH_OPUS
     check_decoder("libopus");
     check_encoder("libopus");
