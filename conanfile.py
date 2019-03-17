@@ -12,7 +12,12 @@ class FFMpegConan(ConanFile):
     version = "4.1"
     url = "https://github.com/bincrafters/conan-ffmpeg"
     description = "A complete, cross-platform solution to record, convert and stream audio and video"
-    license = "https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md"
+    # https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md
+    license = "LGPL-2.1-or-later", "GPL-2.0-or-later"
+    homepage = "https://ffmpeg.org/"
+    author = "Bincrafters <bincrafters@gmail.com>"
+    topics = "ffmpeg", "multimedia", "audio", "video", "encoder", "decoder", "encoding", "decoding",\
+             "transcoding", "multiplexer", "demultiplexer", "streaming"
     exports_sources = ["LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False],
@@ -47,45 +52,45 @@ class FFMpegConan(ConanFile):
                "videotoolbox": [True, False],
                "securetransport": [True, False],
                "qsv": [True, False]}
-    default_options = ("shared=False",
-                       "fPIC=True",
-                       "postproc=True",
-                       "zlib=True",
-                       "bzlib=True",
-                       "lzma=True",
-                       "iconv=True",
-                       "freetype=True",
-                       "openjpeg=True",
-                       "openh264=True",
-                       "opus=True",
-                       "vorbis=True",
-                       "zmq=False",
-                       "sdl2=False",
-                       "x264=True",
-                       "x265=True",
-                       "vpx=True",
-                       "mp3lame=True",
-                       "fdk_aac=True",
-                       "webp=True",
-                       "alsa=True",
-                       "pulse=True",
-                       "vaapi=True",
-                       "vdpau=True",
-                       "xcb=True",
-                       "appkit=True",
-                       "avfoundation=True",
-                       "coreimage=True",
-                       "audiotoolbox=True",
-                       "videotoolbox=True",
-                       "securetransport=True",
-                       "qsv=True")
+    default_options = {'shared': False,
+                       'fPIC': True,
+                       'postproc': True,
+                       'zlib': True,
+                       'bzlib': True,
+                       'lzma': True,
+                       'iconv': True,
+                       'freetype': True,
+                       'openjpeg': True,
+                       'openh264': True,
+                       'opus': True,
+                       'vorbis': True,
+                       'zmq': False,
+                       'sdl2': False,
+                       'x264': True,
+                       'x265': True,
+                       'vpx': True,
+                       'mp3lame': True,
+                       'fdk_aac': True,
+                       'webp': True,
+                       'alsa': True,
+                       'pulse': True,
+                       'vaapi': True,
+                       'vdpau': True,
+                       'xcb': True,
+                       'appkit': True,
+                       'avfoundation': True,
+                       'coreimage': True,
+                       'audiotoolbox': True,
+                       'videotoolbox': True,
+                       'securetransport': True,
+                       'qsv': True}
 
     @property
-    def is_mingw_windows(self):
+    def _is_mingw_windows(self):
         return self.settings.os == 'Windows' and self.settings.compiler == 'gcc' and os.name == 'nt'
 
     @property
-    def is_msvc(self):
+    def _is_msvc(self):
         return self.settings.compiler == 'Visual Studio'
 
     def source(self):
@@ -95,7 +100,7 @@ class FFMpegConan(ConanFile):
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
 
-        if self.is_msvc and self.options.x264 and not self.options['x264'].shared:
+        if self._is_msvc and self.options.x264 and not self.options['x264'].shared:
             # suppress MSVC linker warnings: https://trac.ffmpeg.org/ticket/7396
             # warning LNK4049: locally defined symbol x264_levels imported
             # warning LNK4049: locally defined symbol x264_bit_depth imported
@@ -193,7 +198,7 @@ class FFMpegConan(ConanFile):
                 for package in packages:
                     installer.install(package)
 
-    def copy_pkg_config(self, name):
+    def _copy_pkg_config(self, name):
         root = self.deps_cpp_info[name].rootpath
         pc_dir = os.path.join(root, 'lib', 'pkgconfig')
         pc_files = glob.glob('%s/*.pc' % pc_dir)
@@ -205,11 +210,11 @@ class FFMpegConan(ConanFile):
             tools.replace_prefix_in_pc_file(new_pc, prefix)
 
     def build(self):
-        if self.is_msvc or self.is_mingw_windows:
+        if self._is_msvc or self._is_mingw_windows:
             msys_bin = self.deps_env_info['msys2_installer'].MSYS_BIN
             with tools.environment_append({'PATH': [msys_bin],
                                            'CONAN_BASH_PATH': os.path.join(msys_bin, 'bash.exe')}):
-                if self.is_msvc:
+                if self._is_msvc:
                     with tools.vcvars(self.settings):
                         self.build_configure()
                 else:
@@ -230,7 +235,7 @@ class FFMpegConan(ConanFile):
             args.append('--pkg-config-flags=--static')
             if self.settings.build_type == 'Debug':
                 args.extend(['--disable-optimizations', '--disable-mmx', '--disable-stripping', '--enable-debug'])
-            if self.is_msvc:
+            if self._is_msvc:
                 args.append('--toolchain=msvc')
                 args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
                 if int(str(self.settings.compiler.version)) <= 12:
@@ -294,37 +299,37 @@ class FFMpegConan(ConanFile):
 
             os.makedirs('pkgconfig')
             if self.options.freetype:
-                self.copy_pkg_config('freetype')
-                self.copy_pkg_config('libpng')
+                self._copy_pkg_config('freetype')
+                self._copy_pkg_config('libpng')
             if self.options.opus:
-                self.copy_pkg_config('opus')
+                self._copy_pkg_config('opus')
             if self.options.vorbis:
-                self.copy_pkg_config('ogg')
-                self.copy_pkg_config('vorbis')
+                self._copy_pkg_config('ogg')
+                self._copy_pkg_config('vorbis')
             if self.options.zmq:
-                self.copy_pkg_config('zmq')
+                self._copy_pkg_config('zmq')
             if self.options.sdl2:
-                self.copy_pkg_config('sdl2')
+                self._copy_pkg_config('sdl2')
             if self.options.x264:
-                self.copy_pkg_config('libx264')
+                self._copy_pkg_config('libx264')
             if self.options.x265:
-                self.copy_pkg_config('libx265')
+                self._copy_pkg_config('libx265')
             if self.options.vpx:
-                self.copy_pkg_config('libvpx')
+                self._copy_pkg_config('libvpx')
             if self.options.fdk_aac:
-                self.copy_pkg_config('libfdk_aac')
+                self._copy_pkg_config('libfdk_aac')
             if self.options.openh264:
-                self.copy_pkg_config('openh264')
+                self._copy_pkg_config('openh264')
             if self.options.openjpeg:
-                self.copy_pkg_config('openjpeg')
+                self._copy_pkg_config('openjpeg')
             if self.options.webp:
-                self.copy_pkg_config('libwebp')
+                self._copy_pkg_config('libwebp')
 
             pkg_config_path = os.path.abspath('pkgconfig')
             pkg_config_path = tools.unix_path(pkg_config_path) if self.settings.os == 'Windows' else pkg_config_path
 
             try:
-                if self.is_msvc or self.is_mingw_windows:
+                if self._is_msvc or self._is_mingw_windows:
                     # hack for MSYS2 which doesn't inherit PKG_CONFIG_PATH
                     for filename in ['.bashrc', '.bash_profile', '.profile']:
                         tools.run_in_windows_bash(self, 'cp ~/%s ~/%s.bak' % (filename, filename))
@@ -332,7 +337,7 @@ class FFMpegConan(ConanFile):
                                   % (pkg_config_path, filename)
                         tools.run_in_windows_bash(self, command)
 
-                env_build = AutoToolsBuildEnvironment(self, win_bash=self.is_mingw_windows or self.is_msvc)
+                env_build = AutoToolsBuildEnvironment(self, win_bash=self._is_mingw_windows or self._is_msvc)
                 # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
                 # --host, --build, --target
                 env_build.configure(args=args, build=False, host=False, target=False,
@@ -340,7 +345,7 @@ class FFMpegConan(ConanFile):
                 env_build.make()
                 env_build.make(args=['install'])
             finally:
-                if self.is_msvc or self.is_mingw_windows:
+                if self._is_msvc or self._is_mingw_windows:
                     for filename in ['.bashrc', '.bash_profile', '.profile']:
                         tools.run_in_windows_bash(self, 'cp ~/%s.bak ~/%s' % (filename, filename))
                         tools.run_in_windows_bash(self, 'rm -f ~/%s.bak' % filename)
@@ -348,7 +353,7 @@ class FFMpegConan(ConanFile):
     def package(self):
         with tools.chdir("sources"):
             self.copy(pattern="LICENSE")
-        if self.is_msvc and not self.options.shared:
+        if self._is_msvc and not self.options.shared:
             # ffmpeg produces .a files which are actually .lib files
             with tools.chdir(os.path.join(self.package_folder, 'lib')):
                 libs = glob.glob('*.a')
@@ -359,7 +364,7 @@ class FFMpegConan(ConanFile):
         libs = ['avdevice', 'avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
         if self.options.postproc:
             libs.append('postproc')
-        if self.is_msvc:
+        if self._is_msvc:
             if self.options.shared:
                 self.cpp_info.libs = libs
                 self.cpp_info.libdirs.append('bin')
