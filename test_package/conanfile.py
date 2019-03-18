@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, CMake, tools, RunEnvironment
+from conans import ConanFile, CMake, tools
 import os
 
 
@@ -26,6 +26,7 @@ class TestPackageConan(ConanFile):
         cmake.definitions['WITH_MP3LAME'] = self.options['ffmpeg'].mp3lame
         cmake.definitions['WITH_FDK_AAC'] = self.options['ffmpeg'].fdk_aac
         cmake.definitions['WITH_WEBP'] = self.options['ffmpeg'].webp
+        cmake.definitions['WITH_OPENSSL'] = self.options['ffmpeg'].openssl
 
         if self.settings.os == "Linux":
             cmake.definitions['WITH_VAAPI'] = self.options['ffmpeg'].vaapi
@@ -49,11 +50,5 @@ class TestPackageConan(ConanFile):
         cmake.build()
 
     def test(self):
-        with tools.environment_append(RunEnvironment(self).vars):
-            bin_path = os.path.join("bin", "test_package")
-            if self.settings.os == "Windows":
-                self.run(bin_path)
-            elif self.settings.os == "Macos":
-                self.run("DYLD_LIBRARY_PATH=%s %s" % (os.environ.get('DYLD_LIBRARY_PATH', ''), bin_path))
-            else:
-                self.run("LD_LIBRARY_PATH=%s %s" % (os.environ.get('LD_LIBRARY_PATH', ''), bin_path))
+        bin_path = os.path.join("bin", "test_package")
+        self.run(bin_path, run_environment=True)
