@@ -166,7 +166,7 @@ class FFMpegConan(ConanFile):
         if self.options.webp:
             self.requires.add("libwebp/1.0.0@bincrafters/stable")
         if self.options.openssl:
-            self.requires.add("OpenSSL/1.1.1b@conan/stable")
+            self.requires.add("OpenSSL/1.1.1c@conan/stable")
         if self.settings.os == "Windows":
             if self.options.qsv:
                 self.requires.add("intel_media_sdk/2018R2@bincrafters/stable")
