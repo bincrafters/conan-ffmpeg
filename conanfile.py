@@ -316,6 +316,8 @@ class FFMpegConan(ConanFile):
             args.extend(['--disable-cuda', '--disable-cuvid'])
 
             os.makedirs('pkgconfig')
+            if self.options.bzlib:
+                self._copy_pkg_config('bzip2')
             if self.options.freetype:
                 self._copy_pkg_config('freetype')
                 self._copy_pkg_config('libpng')
