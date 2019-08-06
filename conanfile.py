@@ -229,16 +229,7 @@ class FFMpegConan(ConanFile):
 
     def build(self):
         self._patch_sources()
-        if self._is_msvc or self._is_mingw_windows:
-            msys_bin = self.deps_env_info['msys2_installer'].MSYS_BIN
-            with tools.environment_append({'PATH': [msys_bin],
-                                           'CONAN_BASH_PATH': os.path.join(msys_bin, 'bash.exe')}):
-                if self._is_msvc:
-                    with tools.vcvars(self.settings):
-                        self.build_configure()
-                else:
-                    self.build_configure()
-        else:
+        with tools.vcvars(self.settings) if self._is_msvc else tools.no_op():
             self.build_configure()
 
     def build_configure(self):
