@@ -86,6 +86,7 @@ class FFMpegConan(ConanFile):
                        'videotoolbox': True,
                        'securetransport': False,  # conflicts with OpenSSL
                        'qsv': True}
+    generators = "pkg_config"
     _source_subfolder = "source_subfolder"
 
     @property
@@ -204,7 +205,7 @@ class FFMpegConan(ConanFile):
         pc_dir = os.path.join(root, 'lib', 'pkgconfig')
         pc_files = glob.glob('%s/*.pc' % pc_dir)
         for pc_name in pc_files:
-            new_pc = os.path.join('pkgconfig', os.path.basename(pc_name))
+            new_pc = os.path.basename(pc_name)
             self.output.warn('copy .pc file %s' % os.path.basename(pc_name))
             shutil.copy(pc_name, new_pc)
             prefix = tools.unix_path(root) if self.settings.os == 'Windows' else root
@@ -239,6 +240,19 @@ class FFMpegConan(ConanFile):
             self.build_configure()
 
     def build_configure(self):
+        # FIXME : once component feature is out, should be unnecessary
+        if self.options.freetype:
+            shutil.move("freetype.pc", "freetype2.pc")
+        if self.options.openjpeg:
+            shutil.move("openjpeg.pc", "libopenjp2.pc")
+        if self.options.x265:
+            shutil.move("libx265.pc", "x265.pc")
+        if self.options.webp:
+            self._copy_pkg_config('libwebp')  # components: libwebpmux
+
+        if self.options.vorbis:
+            #    self._copy_pkg_config('ogg')
+            self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
@@ -316,58 +330,12 @@ class FFMpegConan(ConanFile):
             # FIXME disable CUDA and CUVID by default, revisit later
             args.extend(['--disable-cuda', '--disable-cuvid'])
 
-            os.makedirs('pkgconfig')
-            if self.options.freetype:
-                self._copy_pkg_config('freetype')
-                self._copy_pkg_config('libpng')
-            if self.options.opus:
-                self._copy_pkg_config('opus')
-            if self.options.vorbis:
-                self._copy_pkg_config('ogg')
-                self._copy_pkg_config('vorbis')
-            if self.options.zmq:
-                self._copy_pkg_config('zmq')
-            if self.options.sdl2:
-                self._copy_pkg_config('sdl2')
-            if self.options.x264:
-                self._copy_pkg_config('libx264')
-            if self.options.x265:
-                self._copy_pkg_config('libx265')
-            if self.options.vpx:
-                self._copy_pkg_config('libvpx')
-            if self.options.fdk_aac:
-                self._copy_pkg_config('libfdk_aac')
-            if self.options.openh264:
-                self._copy_pkg_config('openh264')
-            if self.options.openjpeg:
-                self._copy_pkg_config('openjpeg')
-            if self.options.webp:
-                self._copy_pkg_config('libwebp')
-
-            pkg_config_path = os.path.abspath('pkgconfig')
-            pkg_config_path = tools.unix_path(pkg_config_path) if self.settings.os == 'Windows' else pkg_config_path
-
-            try:
-                if self._is_msvc or self._is_mingw_windows:
-                    # hack for MSYS2 which doesn't inherit PKG_CONFIG_PATH
-                    for filename in ['.bashrc', '.bash_profile', '.profile']:
-                        tools.run_in_windows_bash(self, 'cp ~/%s ~/%s.bak' % (filename, filename))
-                        command = 'echo "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:%s" >> ~/%s'\
-                                  % (pkg_config_path, filename)
-                        tools.run_in_windows_bash(self, command)
-
-                env_build = AutoToolsBuildEnvironment(self, win_bash=self._is_mingw_windows or self._is_msvc)
-                # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
-                # --host, --build, --target
-                env_build.configure(args=args, build=False, host=False, target=False,
-                                    pkg_config_paths=[pkg_config_path])
-                env_build.make()
-                env_build.make(args=['install'])
-            finally:
-                if self._is_msvc or self._is_mingw_windows:
-                    for filename in ['.bashrc', '.bash_profile', '.profile']:
-                        tools.run_in_windows_bash(self, 'cp ~/%s.bak ~/%s' % (filename, filename))
-                        tools.run_in_windows_bash(self, 'rm -f ~/%s.bak' % filename)
+            env_build = AutoToolsBuildEnvironment(self, win_bash=self._is_mingw_windows or self._is_msvc)
+            # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
+            # --host, --build, --target
+            env_build.configure(args=args, build=False, host=False, target=False)
+            env_build.make()
+            env_build.make(args=['install'])
 
     def package(self):
         with tools.chdir(self._source_subfolder):
