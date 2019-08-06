@@ -88,6 +88,7 @@ class FFMpegConan(ConanFile):
                        'qsv': True}
     generators = "pkg_config"
     _source_subfolder = "source_subfolder"
+    _stdlib = None
 
     @property
     def _is_mingw_windows(self):
@@ -105,6 +106,7 @@ class FFMpegConan(ConanFile):
         os.rename(extracted_dir, self._source_subfolder)
 
     def configure(self):
+        self._stdlib = self.settings.get_safe("compiler.libcxx")
         del self.settings.compiler.libcxx
 
     def config_options(self):
@@ -271,6 +273,11 @@ class FFMpegConan(ConanFile):
                 if int(str(self.settings.compiler.version)) <= 12:
                     # Visual Studio 2013 (and earlier) doesn't support "inline" keyword for C (only for C++)
                     args.append('--extra-cflags=-Dinline=__inline' % self.settings.compiler.runtime)
+            # some libraries require C++ runtime (e.g. openh264, libx265, etc.)
+            if self._stdlib == "libc++":
+                args.append('--extra-ldflags=-lc++')
+            elif self._stdlib in ["libstdc++", "libstdc++11"]:
+                args.append("--extra-ldflags=-lstdc++")
 
             if self.settings.arch == 'x86':
                 args.append('--arch=x86')
