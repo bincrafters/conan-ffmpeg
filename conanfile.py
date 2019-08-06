@@ -135,9 +135,9 @@ class FFMpegConan(ConanFile):
         if self.options.zlib:
             self.requires.add("zlib/1.2.11@conan/stable")
         if self.options.bzlib:
-            self.requires.add("bzip2/1.0.6@conan/stable")
+            self.requires.add("bzip2/1.0.8@conan/stable")
         if self.options.lzma:
-            self.requires.add("lzma/5.2.3@bincrafters/stable")
+            self.requires.add("lzma/5.2.4@bincrafters/stable")
         if self.options.iconv:
             self.requires.add("libiconv/1.15@bincrafters/stable")
         if self.options.freetype:
@@ -149,23 +149,23 @@ class FFMpegConan(ConanFile):
         if self.options.vorbis:
             self.requires.add("vorbis/1.3.6@bincrafters/stable")
         if self.options.opus:
-            self.requires.add("opus/1.2.1@bincrafters/stable")
+            self.requires.add("opus/1.3.1@bincrafters/stable")
         if self.options.zmq:
-            self.requires.add("zmq/4.2.2@bincrafters/stable")
+            self.requires.add("zmq/4.3.1@bincrafters/stable")
         if self.options.sdl2:
-            self.requires.add("sdl2/2.0.7@bincrafters/stable")
+            self.requires.add("sdl2/2.0.9@bincrafters/stable")
         if self.options.x264:
-            self.requires.add("libx264/20171211@bincrafters/stable")
+            self.requires.add("libx264/20190605@bincrafters/stable")
         if self.options.x265:
-            self.requires.add("libx265/2.7@bincrafters/stable")
+            self.requires.add("libx265/3.0@bincrafters/stable")
         if self.options.vpx:
-            self.requires.add("libvpx/1.7.0@bincrafters/stable")
+            self.requires.add("libvpx/1.8.0@bincrafters/stable")
         if self.options.mp3lame:
             self.requires.add("libmp3lame/3.100@bincrafters/stable")
         if self.options.fdk_aac:
-            self.requires.add("libfdk_aac/0.1.5@bincrafters/stable")
+            self.requires.add("libfdk_aac/2.0.0@bincrafters/stable")
         if self.options.webp:
-            self.requires.add("libwebp/1.0.0@bincrafters/stable")
+            self.requires.add("libwebp/1.0.3@bincrafters/stable")
         if self.options.openssl:
             self.requires.add("OpenSSL/1.1.1c@conan/stable")
         if self.settings.os == "Windows":
