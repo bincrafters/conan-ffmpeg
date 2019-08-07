@@ -343,6 +343,11 @@ class FFMpegConan(ConanFile):
                 for lib in libs:
                     shutil.move(lib, lib[:-2] + '.lib')
 
+    def run(self, *args, **kwargs):
+        # ensure PKG_CONFIG_PATH is inherited by MSYS bash
+        kwargs["with_login"] = False
+        super(FFMpegConan, self).run(*args, **kwargs)
+
     def package_info(self):
         libs = ['avdevice', 'avfilter', 'avformat', 'avcodec', 'swresample', 'swscale', 'avutil']
         if self.options.postproc:
