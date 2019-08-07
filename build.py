@@ -10,6 +10,7 @@ from bincrafters import build_template_default
 def disable_libs_vs2013(build):
     build.options.update({'ffmpeg:opus': False})
     build.options.update({'ffmpeg:vpx': False})
+    build.options.update({'ffmpeg:x265': False})
     return build
 
 
