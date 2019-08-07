@@ -242,9 +242,7 @@ class FFMpegConan(ConanFile):
             shutil.move("libx265.pc", "x265.pc")
         if self.options.webp:
             self._copy_pkg_config('libwebp')  # components: libwebpmux
-
         if self.options.vorbis:
-            #    self._copy_pkg_config('ogg')
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
