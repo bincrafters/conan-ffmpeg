@@ -1,6 +1,6 @@
 [![Download](https://api.bintray.com/packages/bincrafters/public-conan/ffmpeg%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/ffmpeg%3Abincrafters/_latestVersion)
-[![Build Status](https://travis-ci.org/bincrafters/conan-ffmpeg.svg?branch=stable%2F3.4)](https://travis-ci.org/bincrafters/conan-ffmpeg)
-[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-ffmpeg?branch=stable%2F3.4&svg=true)](https://ci.appveyor.com/project/bincrafters/conan-ffmpeg)
+[![Build Status](https://travis-ci.org/bincrafters/conan-ffmpeg.svg?branch=stable%2F4.2)](https://travis-ci.org/bincrafters/conan-ffmpeg)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-ffmpeg?branch=stable%2F4.2&svg=true)](https://ci.appveyor.com/project/bincrafters/conan-ffmpeg)
 
 [Conan.io](https://conan.io) package recipe for *ffmpeg*.
 
@@ -12,14 +12,14 @@ The packages generated with this **conanfile** can be found on [Bintray](https:/
 
 ### Basic setup
 
-    $ conan install ffmpeg/3.4@bincrafters/stable
+    $ conan install ffmpeg/4.2@bincrafters/stable
 
 ### Project setup
 
 If you handle multiple dependencies in your project is better to add a *conanfile.txt*
 
     [requires]
-    ffmpeg/3.4@bincrafters/stable
+    ffmpeg/4.2@bincrafters/stable
 
 
 Complete the installation of requirements for your project running:
@@ -73,7 +73,7 @@ The following command both runs all the steps of the conan file, and publishes t
 
 ## Upload
 
-    $ conan upload ffmpeg/3.4@bincrafters/stable --all -r bincrafters
+    $ conan upload ffmpeg/4.2@bincrafters/stable --all -r bincrafters
 
 
 ## Conan Recipe License
@@ -81,4 +81,4 @@ The following command both runs all the steps of the conan file, and publishes t
 NOTE: The conan recipe license applies only to the files of this recipe, which can be used to build and package ffmpeg.
 It does *not* in any way apply or is related to the actual software being packaged.
 
-[MIT](https://github.com/bincrafters/conan-ffmpeg.git/blob/testing/3.4/LICENSE.md)
+[MIT](https://github.com/bincrafters/conan-ffmpeg.git/blob/testing/4.2/LICENSE.md)
