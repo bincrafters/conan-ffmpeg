@@ -128,9 +128,12 @@ class FFMpegConan(ConanFile):
 
     def build_requirements(self):
         self.build_requires("yasm_installer/1.3.0@bincrafters/stable")
-        if tools.os_info.is_windows:
-            if "CONAN_BASH_PATH" not in os.environ:
-                self.build_requires("msys2_installer/latest@bincrafters/stable")
+        if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
+            self.build_requires("msys2_installer/latest@bincrafters/stable")
+        if (self.settings.os == "Android" and tools.cross_building(self.settings)
+            and not "android_ndk_installer" in self.deps_cpp_info.deps
+            and not "NDK_ROOT" in os.environ):
+            self.build_requires("android_ndk_installer/r20@bincrafters/stable")
 
     def requirements(self):
         if self.options.zlib:
@@ -174,7 +177,7 @@ class FFMpegConan(ConanFile):
                 self.requires.add("intel_media_sdk/2018R2_1@bincrafters/stable")
 
     def system_requirements(self):
-        if self.settings.os == "Linux" and tools.os_info.is_linux:
+        if not tools.cross_building(self.settings) and self.settings.os == "Linux" and tools.os_info.is_linux:
             if tools.os_info.with_apt:
                 installer = tools.SystemPackageTool()
                 arch_suffix = ''
@@ -243,7 +246,8 @@ class FFMpegConan(ConanFile):
         if self.options.fdk_aac:
             shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
-            self._copy_pkg_config('libwebp')  # components: libwebpmux
+            #self._copy_pkg_config('libwebp')  # components: libwebpmux
+            shutil.move("libwebp.pc", "webp.pc")
         if self.options.vorbis:
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
         with tools.chdir(self._source_subfolder):
@@ -319,6 +323,32 @@ class FFMpegConan(ConanFile):
 
             if self.settings.os == "Windows":
                 args.append('--enable-libmfx' if self.options.qsv else '--disable-libmfx')
+
+            if tools.cross_building(self.settings):
+                args.append('--enable-cross-compile')
+                if self.settings.os == "Android":
+                    args.append('--target-os=android')
+                    if "android_ndk_installer" in self.deps_env_info:
+                        ndk_env_info = self.deps_env_info["android_ndk_installer"]
+                        cc = ndk_env_info.CC
+                        cxx = ndk_env_info.CXX
+                        ndk_root = ndk_env_info.NDK_ROOT
+                    else:
+                        env = os.environ
+                        cc = env["CC"]
+                        cxx = env["CXX"]
+                        ndk_root = env["NDK_ROOT"]
+                    args.append('--cc=%s' % cc)
+                    args.append('--cxx=%s' % cxx)
+                    arch = {'armv7': 'arm',
+                            'armv8': 'aarch64',
+                            'x86': 'i686',
+                            'x86_64': 'x86_64'}.get(str(self.settings.arch))
+                    abi = 'androideabi' if self.settings.arch == 'armv7' else 'android'
+                    cross_prefix = "%s/bin/%s-linux-%s-" % (ndk_root, arch, abi)
+                    args.append('--cross-prefix=%s' % cross_prefix)
+                    args.append('--arch=%s' % arch)
+                    args.append('--pkg-config=pkg-config')
 
             # FIXME disable CUDA and CUVID by default, revisit later
             args.extend(['--disable-cuda', '--disable-cuvid'])
