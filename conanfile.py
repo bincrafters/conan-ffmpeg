@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans.errors import ConanInvalidConfiguration
 import os
 import glob
 import shutil
@@ -88,10 +89,14 @@ class FFMpegConan(ConanFile):
                        'qsv': True}
     generators = "pkg_config"
     _source_subfolder = "source_subfolder"
+    
+    @property
+    def _use_mingw(self):
+        return self.settings.os == "Windows" and self.settings.compiler == "gcc"
 
     @property
-    def _is_mingw_windows(self):
-        return self.settings.os == 'Windows' and self.settings.compiler == 'gcc' and os.name == 'nt'
+    def _use_winbash(self):
+        return tools.os_info.is_windows and (self.settings.compiler == 'gcc' or tools.cross_building(self.settings))
 
     @property
     def _is_msvc(self):
@@ -128,8 +133,11 @@ class FFMpegConan(ConanFile):
 
     def build_requirements(self):
         self.build_requires("yasm_installer/1.3.0@bincrafters/stable")
-        if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
-            self.build_requires("msys2_installer/latest@bincrafters/stable")
+        if tools.os_info.is_windows:
+            if "CONAN_BASH_PATH" not in os.environ:
+                self.build_requires("msys2_installer/latest@bincrafters/stable")
+            if tools.run_in_windows_bash(self, "which pkg-config") != 0:
+                self.build_requires("pkg-config_installer/0.29.2@bincrafters/stable")
         if (self.settings.os == "Android" and tools.cross_building(self.settings)
             and not "android_ndk_installer" in self.deps_cpp_info.deps
             and not "NDK_ROOT" in os.environ):
@@ -233,6 +241,21 @@ class FFMpegConan(ConanFile):
         with tools.vcvars(self.settings) if self._is_msvc else tools.no_op():
             self.build_configure()
 
+    def _format_path(self, path):
+        return tools.unix_path(path) if self._use_winbash else path
+
+    @property
+    def _target_os(self):
+        os = str(self.settings.os)
+        if os == "Windows":
+            return "mingw32" if self._use_mingw else "win32"
+        elif os in ["Macos", "iOS", "watchOS", "tvOS"]:
+            return "darwin"
+        elif os in ["Linux", "Android", "FreeBSD", "SunOS", "AIX"]:
+            return os.lower()
+        else:
+            raise ConanInvalidConfiguration("Unsupported os '{}'".format(os))
+
     def build_configure(self):
         # FIXME : once component feature is out, should be unnecessary
         if self.options.freetype:
@@ -246,12 +269,11 @@ class FFMpegConan(ConanFile):
         if self.options.fdk_aac:
             shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
-            #self._copy_pkg_config('libwebp')  # components: libwebpmux
-            shutil.move("libwebp.pc", "webp.pc")
+            shutil.move("libwebp.pc", "webp.pc")  # components: libwebpmux
         if self.options.vorbis:
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
         with tools.chdir(self._source_subfolder):
-            prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
+            prefix = self._format_path(self.package_folder)
             args = ['--prefix=%s' % prefix,
                     '--disable-doc',
                     '--disable-programs']
@@ -326,34 +348,30 @@ class FFMpegConan(ConanFile):
 
             if tools.cross_building(self.settings):
                 args.append('--enable-cross-compile')
+                args.append('--target-os=%s' % self._target_os)
+                cc = os.environ["CC"]
+                cxx = os.environ["CXX"]
+                args.append('--cc=%s' % cc)
+                args.append('--cxx=%s' % cxx)
+                arch = {'armv7': 'arm',
+                        'armv8': 'aarch64',
+                        'x86': 'i686',
+                        'x86_64': 'x86_64'}.get(str(self.settings.arch))
+                args.append('--arch=%s' % arch)
+
                 if self.settings.os == "Android":
-                    args.append('--target-os=android')
-                    if "android_ndk_installer" in self.deps_env_info:
-                        ndk_env_info = self.deps_env_info["android_ndk_installer"]
-                        cc = ndk_env_info.CC
-                        cxx = ndk_env_info.CXX
-                        ndk_root = ndk_env_info.NDK_ROOT
-                    else:
-                        env = os.environ
-                        cc = env["CC"]
-                        cxx = env["CXX"]
-                        ndk_root = env["NDK_ROOT"]
-                    args.append('--cc=%s' % cc)
-                    args.append('--cxx=%s' % cxx)
-                    arch = {'armv7': 'arm',
-                            'armv8': 'aarch64',
-                            'x86': 'i686',
-                            'x86_64': 'x86_64'}.get(str(self.settings.arch))
+                    ndk_root = self._format_path(os.environ["NDK_ROOT"])
                     abi = 'androideabi' if self.settings.arch == 'armv7' else 'android'
                     cross_prefix = "%s/bin/%s-linux-%s-" % (ndk_root, arch, abi)
                     args.append('--cross-prefix=%s' % cross_prefix)
-                    args.append('--arch=%s' % arch)
+                    # if not specified, it will be set to cross_prefix-pkg-config by default
+                    # which does not exist in ndk
                     args.append('--pkg-config=pkg-config')
 
             # FIXME disable CUDA and CUVID by default, revisit later
             args.extend(['--disable-cuda', '--disable-cuvid'])
 
-            env_build = AutoToolsBuildEnvironment(self, win_bash=self._is_mingw_windows or self._is_msvc)
+            env_build = AutoToolsBuildEnvironment(self, win_bash=self._use_winbash or self._is_msvc)
             # ffmpeg's configure is not actually from autotools, so it doesn't understand standard options like
             # --host, --build, --target
             env_build.configure(args=args, build=False, host=False, target=False)
