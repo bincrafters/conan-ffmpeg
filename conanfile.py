@@ -269,7 +269,7 @@ class FFMpegConan(ConanFile):
         if self.options.fdk_aac:
             shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
-            shutil.move("libwebp.pc", "webp.pc")  # components: libwebpmux
+            shutil.copy("libwebp.pc", "webp.pc")  # components: libwebpmux
         if self.options.vorbis:
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
         with tools.chdir(self._source_subfolder):
@@ -343,7 +343,7 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-videotoolbox' if self.options.videotoolbox else '--disable-videotoolbox')
                 args.append('--enable-securetransport' if self.options.securetransport else '--disable-securetransport')
 
-            if self.settings.os == "Windows":
+            if self.settings.os == "Windows" and not self._use_mingw:
                 args.append('--enable-libmfx' if self.options.qsv else '--disable-libmfx')
 
             if tools.cross_building(self.settings):
