@@ -128,7 +128,7 @@ class FFMpegConan(ConanFile):
             self.options.remove("audiotoolbox")
             self.options.remove("videotoolbox")
             self.options.remove("securetransport")
-        if self.settings.os != "Windows":
+        if self.settings.os != "Windows" or self._use_mingw:
             self.options.remove("qsv")
 
     def build_requirements(self):
@@ -181,7 +181,7 @@ class FFMpegConan(ConanFile):
         if self.options.openssl:
             self.requires.add("OpenSSL/1.1.1c@conan/stable")
         if self.settings.os == "Windows":
-            if self.options.qsv:
+            if not self._use_mingw and self.options.qsv:
                 self.requires.add("intel_media_sdk/2018R2_1@bincrafters/stable")
 
     def system_requirements(self):
