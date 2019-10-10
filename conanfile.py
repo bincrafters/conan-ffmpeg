@@ -249,12 +249,23 @@ class FFMpegConan(ConanFile):
         os = str(self.settings.os)
         if os == "Windows":
             return "mingw32" if self._use_mingw else "win32"
-        elif os in ["Macos", "iOS", "watchOS", "tvOS"]:
+        elif tools.is_apple_os(os):
             return "darwin"
         elif os in ["Linux", "Android", "FreeBSD", "SunOS", "AIX"]:
             return os.lower()
         else:
             raise ConanInvalidConfiguration("Unsupported os '{}'".format(os))
+
+    @property
+    def _target_arch(self):
+        arch = {'armv7': 'arm',
+                'armv8': 'aarch64',
+                'x86': 'i686',
+                'x86_64': 'x86_64'}.get(str(self.settings.arch))
+        if arch == None:
+            raise ConanInvalidConfiguration("Unsupported arch '{}'".format(str(self.settings.arch)))
+        else:
+            return arch
 
     def build_configure(self):
         # FIXME : once component feature is out, should be unnecessary
@@ -269,7 +280,7 @@ class FFMpegConan(ConanFile):
         if self.options.fdk_aac:
             shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
-            shutil.copy("libwebp.pc", "webp.pc")  # components: libwebpmux
+            shutil.copy("libwebp.pc", "libwebpmux.pc")  # components: libwebpmux
         if self.options.vorbis:
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
         with tools.chdir(self._source_subfolder):
@@ -290,9 +301,6 @@ class FFMpegConan(ConanFile):
                 if int(str(self.settings.compiler.version)) <= 12:
                     # Visual Studio 2013 (and earlier) doesn't support "inline" keyword for C (only for C++)
                     args.append('--extra-cflags=-Dinline=__inline' % self.settings.compiler.runtime)
-
-            if self.settings.arch == 'x86':
-                args.append('--arch=x86')
 
             if self.settings.os != "Windows":
                 args.append('--enable-pic' if self.options.fPIC else '--disable-pic')
@@ -346,18 +354,17 @@ class FFMpegConan(ConanFile):
             if self.settings.os == "Windows" and not self._use_mingw:
                 args.append('--enable-libmfx' if self.options.qsv else '--disable-libmfx')
 
+            if "CC" in os.environ:
+                args.append('--cc=%s' % os.environ["CC"])
+            if "CXX" in os.environ:
+                args.append('--cxx=%s' % os.environ["CXX"])
+
+            arch = self._target_arch
+            args.append('--arch=%s' % arch)
+
             if tools.cross_building(self.settings):
                 args.append('--enable-cross-compile')
                 args.append('--target-os=%s' % self._target_os)
-                cc = os.environ["CC"]
-                cxx = os.environ["CXX"]
-                args.append('--cc=%s' % cc)
-                args.append('--cxx=%s' % cxx)
-                arch = {'armv7': 'arm',
-                        'armv8': 'aarch64',
-                        'x86': 'i686',
-                        'x86_64': 'x86_64'}.get(str(self.settings.arch))
-                args.append('--arch=%s' % arch)
 
                 if self.settings.os == "Android":
                     ndk_root = self._format_path(os.environ["NDK_ROOT"])

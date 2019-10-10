@@ -9,6 +9,10 @@ class TestPackageConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
 
+    @property
+    def _use_mingw(self):
+        return self.settings.os == "Windows" and self.settings.compiler == "gcc"
+
     def build(self):
         cmake = CMake(self)
 
@@ -43,12 +47,14 @@ class TestPackageConan(ConanFile):
             cmake.definitions['WITH_VIDEOTOOLBOX'] = self.options['ffmpeg'].videotoolbox
             cmake.definitions['WITH_SECURETRANSPORT'] = self.options['ffmpeg'].securetransport
 
-        if self.settings.os == "Windows":
+        if self.settings.os == "Windows" and not self._use_mingw:
             cmake.definitions['WITH_QSV'] = self.options['ffmpeg'].qsv
 
         cmake.configure()
         cmake.build()
 
     def test(self):
+        if tools.cross_building(self.settings):
+            return
         bin_path = os.path.join("bin", "test_package")
         self.run(bin_path, run_environment=True)
