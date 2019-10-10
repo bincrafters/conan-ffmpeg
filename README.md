@@ -1,5 +1,5 @@
 [![Download](https://api.bintray.com/packages/bincrafters/public-conan/ffmpeg%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/ffmpeg%3Abincrafters/_latestVersion)
-[![Build Status](https://travis-ci.org/bincrafters/conan-ffmpeg.svg?branch=stable%2F4.2)](https://travis-ci.org/bincrafters/conan-ffmpeg)
+[![Build Status](https://travis-ci.com/bincrafters/conan-ffmpeg.svg?branch=stable%2F4.2)](https://travis-ci.com/bincrafters/conan-ffmpeg)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-ffmpeg?branch=stable%2F4.2&svg=true)](https://ci.appveyor.com/project/bincrafters/conan-ffmpeg)
 
 [Conan.io](https://conan.io) package recipe for *ffmpeg*.
