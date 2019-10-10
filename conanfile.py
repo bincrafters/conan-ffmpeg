@@ -10,11 +10,11 @@ class FFMpegConan(ConanFile):
     url = "https://github.com/bincrafters/conan-ffmpeg"
     description = "A complete, cross-platform solution to record, convert and stream audio and video"
     # https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md
-    license = "LGPL-2.1-or-later", "GPL-2.0-or-later"
+    license = ("LGPL-2.1-or-later", "GPL-2.0-or-later")
     homepage = "https://ffmpeg.org/"
     author = "Bincrafters <bincrafters@gmail.com>"
-    topics = ("ffmpeg", "multimedia", "audio", "video", "encoder", "decoder", "encoding", "decoding")
-             "transcoding", "multiplexer", "demultiplexer", "streaming"
+    topics = ("ffmpeg", "multimedia", "audio", "video", "encoder", "decoder", "encoding", "decoding",
+             "transcoding", "multiplexer", "demultiplexer", "streaming")
     exports_sources = ["LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False],
