@@ -138,10 +138,6 @@ class FFMpegConan(ConanFile):
                 self.build_requires("msys2_installer/latest@bincrafters/stable")
             if tools.run_in_windows_bash(self, "which pkg-config") != 0:
                 self.build_requires("pkg-config_installer/0.29.2@bincrafters/stable")
-        if (self.settings.os == "Android" and tools.cross_building(self.settings)
-            and not "android_ndk_installer" in self.deps_cpp_info.deps
-            and not "NDK_ROOT" in os.environ):
-            self.build_requires("android_ndk_installer/r20@bincrafters/stable")
 
     def requirements(self):
         if self.options.zlib:
@@ -355,9 +351,9 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-libmfx' if self.options.qsv else '--disable-libmfx')
 
             if "CC" in os.environ:
-                args.append('--cc=%s' % os.environ["CC"])
+                args.append('--cc=%s' % tools.unix_path(os.environ["CC"]))
             if "CXX" in os.environ:
-                args.append('--cxx=%s' % os.environ["CXX"])
+                args.append('--cxx=%s' % tools.unix_path(os.environ["CXX"]))
 
             arch = self._target_arch
             args.append('--arch=%s' % arch)
@@ -448,3 +444,5 @@ class FFMpegConan(ConanFile):
                 self.cpp_info.sharedlinkflags.append("-Wl,-Bsymbolic")
         elif self.settings.os == "Windows":
             self.cpp_info.libs.extend(['ws2_32', 'secur32', 'shlwapi', 'strmiids', 'vfw32', 'bcrypt'])
+        elif self.settings.os == "Android":
+            self.cpp_info.libs.extend(["android", "mediandk", "camera2ndk"])
