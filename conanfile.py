@@ -12,7 +12,6 @@ class FFMpegConan(ConanFile):
     # https://github.com/FFmpeg/FFmpeg/blob/master/LICENSE.md
     license = ("LGPL-2.1-or-later", "GPL-2.0-or-later")
     homepage = "https://ffmpeg.org/"
-    author = "Bincrafters <bincrafters@gmail.com>"
     topics = ("ffmpeg", "multimedia", "audio", "video", "encoder", "decoder", "encoding", "decoding",
              "transcoding", "multiplexer", "demultiplexer", "streaming")
     exports_sources = ["LICENSE"]
@@ -128,7 +127,7 @@ class FFMpegConan(ConanFile):
         self.build_requires("yasm/1.3.0")
         if tools.os_info.is_windows:
             if "CONAN_BASH_PATH" not in os.environ:
-                self.build_requires("msys2_installer/latest@bincrafters/stable")
+                self.build_requires("msys2/20161025")
 
     def requirements(self):
         if self.options.zlib:

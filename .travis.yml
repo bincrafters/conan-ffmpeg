@@ -3,7 +3,7 @@ env:
      - CONAN_DOCKER_32_IMAGES: 1
 linux: &linux
    os: linux
-   dist: xenial
+   dist: bionic
    language: python
    python: "3.7"
    services:
@@ -61,6 +61,10 @@ matrix:
         env: CONAN_CLANG_VERSIONS=8 CONAN_DOCKER_IMAGE=conanio/clang8 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Debug
       - <<: *linux
         env: CONAN_CLANG_VERSIONS=8 CONAN_DOCKER_IMAGE=conanio/clang8 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Release
+      - <<: *linux
+        env: CONAN_CLANG_VERSIONS=9 CONAN_DOCKER_IMAGE=conanio/clang9 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Debug
+      - <<: *linux
+        env: CONAN_CLANG_VERSIONS=9 CONAN_DOCKER_IMAGE=conanio/clang9 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Release
       - <<: *osx
         osx_image: xcode9.4
         env: CONAN_APPLE_CLANG_VERSIONS=9.1 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Debug
@@ -74,10 +78,10 @@ matrix:
         osx_image: xcode10.3
         env: CONAN_APPLE_CLANG_VERSIONS=10.0 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Release
       - <<: *osx
-        osx_image: xcode11
+        osx_image: xcode11.2
         env: CONAN_APPLE_CLANG_VERSIONS=11.0 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Debug
       - <<: *osx
-        osx_image: xcode11
+        osx_image: xcode11.2
         env: CONAN_APPLE_CLANG_VERSIONS=11.0 CONAN_ARCHS=x86_64 CONAN_BUILD_TYPES=Release
 
 install:
