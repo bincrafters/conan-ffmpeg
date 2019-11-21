@@ -19,7 +19,7 @@ class FFMpegConan(ConanFile):
     author = "Bincrafters <bincrafters@gmail.com>"
     topics = "ffmpeg", "multimedia", "audio", "video", "encoder", "decoder", "encoding", "decoding",\
              "transcoding", "multiplexer", "demultiplexer", "streaming"
-    exports_sources = ["LICENSE"]
+    exports_sources = ["LICENSE", "Fix-armv7-build-failure.patch"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False],
                "fPIC": [True, False],
@@ -219,6 +219,10 @@ class FFMpegConan(ConanFile):
             tools.replace_prefix_in_pc_file(new_pc, prefix)
 
     def _patch_sources(self):
+        if self.settings.arch == "armv7":
+            tools.patch(base_path=self._source_subfolder,
+                patch_file="Fix-armv7-build-failure.patch")
+
         if self._is_msvc and self.options.x264 and not self.options['x264'].shared:
             # suppress MSVC linker warnings: https://trac.ffmpeg.org/ticket/7396
             # warning LNK4049: locally defined symbol x264_levels imported
