@@ -449,4 +449,6 @@ class FFMpegConan(ConanFile):
         elif self.settings.os == "Windows":
             self.cpp_info.libs.extend(['ws2_32', 'secur32', 'shlwapi', 'strmiids', 'vfw32', 'bcrypt'])
         elif self.settings.os == "Android":
-            self.cpp_info.libs.extend(["android", "mediandk", "camera2ndk"])
+            self.cpp_info.libs.extend(["android", "mediandk"])
+            if int(self.settings.os.api_level.value) >= 24:
+                self.cpp_info.libs.append("camera2ndk")
