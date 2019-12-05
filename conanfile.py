@@ -233,6 +233,7 @@ class FFMpegConan(ConanFile):
             shutil.move("freetype.pc", "freetype2.pc")
         if self.options.openjpeg:
             shutil.move("openjpeg.pc", "libopenjp2.pc")
+            shutil.move("tiff.pc", "libtiff.pc")
         if self.options.x264:
             shutil.move("libx264.pc", "x264.pc")
         if self.options.x265:
