@@ -244,6 +244,8 @@ class FFMpegConan(ConanFile):
             self._copy_pkg_config('libwebp')  # components: libwebpmux
         if self.options.vorbis:
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
+        if self.options.lzma:
+            shutil.move('xz_utils.pc', 'lzma.pc')
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
