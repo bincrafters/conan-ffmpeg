@@ -235,7 +235,6 @@ int main() try
 #endif
 #ifdef WITH_WEBP
     check_encoder("libwebp");
-    check_encoder("libwebp_anim");
 #endif
     return EXIT_SUCCESS;
 } catch (std::runtime_error & e)
