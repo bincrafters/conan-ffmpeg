@@ -231,9 +231,11 @@ class FFMpegConan(ConanFile):
         # FIXME : once component feature is out, should be unnecessary
         if self.options.freetype:
             shutil.move("freetype.pc", "freetype2.pc")
+            shutil.move("zlib.pc", "ZLIB.pc")
+            shutil.move("bzip2.pc", "BZip2.pc")
         if self.options.openjpeg:
             shutil.move("openjpeg.pc", "libopenjp2.pc")
-            shutil.move("tiff.pc", "libtiff.pc")
+            shutil.move("tiff.pc", "TIFF.pc")
         if self.options.x264:
             shutil.move("libx264.pc", "x264.pc")
         if self.options.x265:
