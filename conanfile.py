@@ -236,10 +236,6 @@ class FFMpegConan(ConanFile):
         if self.options.openjpeg:
             shutil.move("openjpeg.pc", "libopenjp2.pc")
             shutil.move("tiff.pc", "TIFF.pc")
-        if self.options.x264:
-            shutil.move("libx264.pc", "x264.pc")
-        if self.options.x265:
-            shutil.move("libx265.pc", "x265.pc")
         if self.options.fdk_aac:
             shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
