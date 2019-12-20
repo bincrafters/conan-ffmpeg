@@ -230,7 +230,6 @@ class FFMpegConan(ConanFile):
     def build_configure(self):
         # FIXME : once component feature is out, should be unnecessary
         if self.options.freetype:
-            shutil.move("freetype.pc", "freetype2.pc")
             shutil.move("zlib.pc", "ZLIB.pc")
             shutil.move("bzip2.pc", "BZip2.pc")
         if self.options.openjpeg:
@@ -242,8 +241,6 @@ class FFMpegConan(ConanFile):
             self._copy_pkg_config('libwebp')  # components: libwebpmux
         if self.options.vorbis:
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
-        if self.options.lzma:
-            shutil.move('xz_utils.pc', 'lzma.pc')
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
