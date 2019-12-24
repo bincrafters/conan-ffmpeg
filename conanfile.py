@@ -128,6 +128,9 @@ class FFMpegConan(ConanFile):
         if tools.os_info.is_windows:
             if "CONAN_BASH_PATH" not in os.environ:
                 self.build_requires("msys2/20190524")
+        if self.settings.os == 'Linux':
+            if not tools.which('pkg-config'):
+                self.build_requires('pkg-config_installer/0.29.2@bincrafters/stable')
 
     def requirements(self):
         if self.options.zlib:
@@ -169,31 +172,24 @@ class FFMpegConan(ConanFile):
         if self.settings.os == "Windows":
             if self.options.qsv:
                 self.requires.add("intel_media_sdk/2018R2_1@bincrafters/stable")
+        if self.settings.os == "Linux":
+            if self.options.alsa:
+                self.requires.add("libalsa/1.1.9")
+            if self.options.xcb:
+                self.requires.add("libxcb/1.13.1@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
             if tools.os_info.with_apt:
                 installer = tools.SystemPackageTool()
-                arch_suffix = ''
-                if self.settings.arch == "x86":
-                    arch_suffix = ':i386'
-                elif self.settings.arch == "x86_64":
-                    arch_suffix = ':amd64'
 
-                packages = ['pkg-config']
-                if self.options.alsa:
-                    packages.append('libasound2-dev%s' % arch_suffix)
+                packages = []
                 if self.options.pulse:
-                    packages.append('libpulse-dev%s' % arch_suffix)
+                    packages.append('libpulse-dev')
                 if self.options.vaapi:
-                    packages.append('libva-dev%s' % arch_suffix)
+                    packages.append('libva-dev')
                 if self.options.vdpau:
-                    packages.append('libvdpau-dev%s' % arch_suffix)
-                if self.options.xcb:
-                    packages.extend(['libxcb1-dev%s' % arch_suffix,
-                                     'libxcb-shm0-dev%s' % arch_suffix,
-                                     'libxcb-shape0-dev%s' % arch_suffix,
-                                     'libxcb-xfixes0-dev%s' % arch_suffix])
+                    packages.append('libvdpau-dev')
                 for package in packages:
                     installer.install(package)
 
@@ -207,6 +203,8 @@ class FFMpegConan(ConanFile):
             shutil.copy(pc_name, new_pc)
             prefix = tools.unix_path(root) if self.settings.os == 'Windows' else root
             tools.replace_prefix_in_pc_file(new_pc, prefix)
+        for dep in self.deps_cpp_info[name].public_deps:
+            self._copy_pkg_config(dep)
 
     def _patch_sources(self):
         if self._is_msvc and self.options.x264 and not self.options['x264'].shared:
@@ -237,6 +235,11 @@ class FFMpegConan(ConanFile):
             self._copy_pkg_config('libwebp')  # components: libwebpmux
         if self.options.vorbis:
             self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
+        if self.settings.os == "Linux":
+            if self.options.xcb:
+                self._copy_pkg_config('libxcb')
+            if self.options.alsa:
+                shutil.move('libalsa.pc', 'alsa.pc')
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
@@ -367,8 +370,6 @@ class FFMpegConan(ConanFile):
             self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
         elif self.settings.os == "Linux":
             self.cpp_info.libs.extend(['dl', 'pthread'])
-            if self.options.alsa:
-                self.cpp_info.libs.append('asound')
             if self.options.pulse:
                 self.cpp_info.libs.append('pulse')
             if self.options.vaapi:
@@ -376,7 +377,7 @@ class FFMpegConan(ConanFile):
             if self.options.vdpau:
                 self.cpp_info.libs.extend(['vdpau', 'X11'])
             if self.options.xcb:
-                self.cpp_info.libs.extend(['xcb', 'xcb-shm', 'xcb-shape', 'xcb-xfixes'])
+                self.cpp_info.libs.extend(['xcb-shm', 'xcb-shape', 'xcb-xfixes'])
             if self.settings.os != "Windows" and self.options.fPIC:
                 # https://trac.ffmpeg.org/ticket/1713
                 # https://ffmpeg.org/platform.html#Advanced-linking-configuration
