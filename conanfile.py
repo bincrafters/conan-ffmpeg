@@ -231,7 +231,6 @@ class FFMpegConan(ConanFile):
         # FIXME : once component feature is out, should be unnecessary
         if self.options.freetype:
             shutil.move("zlib.pc", "ZLIB.pc")
-            shutil.move("bzip2.pc", "BZip2.pc")
         if self.options.fdk_aac:
             shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
