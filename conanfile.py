@@ -227,8 +227,6 @@ class FFMpegConan(ConanFile):
 
     def build_configure(self):
         # FIXME : once component feature is out, should be unnecessary
-        if self.options.freetype:
-            shutil.move("zlib.pc", "ZLIB.pc")
         if self.options.fdk_aac:
             shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
@@ -238,8 +236,6 @@ class FFMpegConan(ConanFile):
         if self.settings.os == "Linux":
             if self.options.xcb:
                 self._copy_pkg_config('libxcb')
-            if self.options.alsa:
-                shutil.move('libalsa.pc', 'alsa.pc')
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
