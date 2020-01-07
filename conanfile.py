@@ -269,6 +269,8 @@ class FFMpegConan(ConanFile):
 
     def build_configure(self):
         # FIXME : once component feature is out, should be unnecessary
+        if self.options.zlib:
+            shutil.move("zlib.pc", "ZLIB.pc")
         if self.options.freetype:
             shutil.move("freetype.pc", "freetype2.pc")
         if self.options.openjpeg:
