@@ -156,7 +156,7 @@ class FFMpegConan(ConanFile):
         if self.options.sdl2:
             self.requires.add("sdl2/2.0.9@bincrafters/stable")
         if self.options.x264:
-            self.requires.add("libx264/20190605@bincrafters/stable")
+            self.requires.add("libx264/20190605")
         if self.options.x265:
             self.requires.add("libx265/3.0@bincrafters/stable")
         if self.options.vpx:
