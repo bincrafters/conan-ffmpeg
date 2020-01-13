@@ -164,7 +164,7 @@ class FFMpegConan(ConanFile):
         if self.options.mp3lame:
             self.requires.add("libmp3lame/3.100@bincrafters/stable")
         if self.options.fdk_aac:
-            self.requires.add("libfdk_aac/2.0.0@bincrafters/stable")
+            self.requires.add("libfdk_aac/2.0.0")
         if self.options.webp:
             self.requires.add("libwebp/1.0.3")
         if self.options.openssl:
