@@ -227,8 +227,6 @@ class FFMpegConan(ConanFile):
 
     def build_configure(self):
         # FIXME : once component feature is out, should be unnecessary
-        if self.options.fdk_aac:
-            shutil.move("libfdk_aac.pc", "fdk-aac.pc")
         if self.options.webp:
             self._copy_pkg_config('libwebp')  # components: libwebpmux
         if self.options.vorbis:
