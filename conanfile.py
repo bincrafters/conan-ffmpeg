@@ -148,9 +148,9 @@ class FFMpegConan(ConanFile):
         if self.options.openh264:
             self.requires.add("openh264/1.7.0@bincrafters/stable")
         if self.options.vorbis:
-            self.requires.add("vorbis/1.3.6@bincrafters/stable")
+            self.requires.add("vorbis/1.3.6")
         if self.options.opus:
-            self.requires.add("opus/1.3.1@bincrafters/stable")
+            self.requires.add("opus/1.3.1")
         if self.options.zmq:
             self.requires.add("zmq/4.3.1@bincrafters/stable")
         if self.options.sdl2:
@@ -162,7 +162,7 @@ class FFMpegConan(ConanFile):
         if self.options.vpx:
             self.requires.add("libvpx/1.8.0@bincrafters/stable")
         if self.options.mp3lame:
-            self.requires.add("libmp3lame/3.100@bincrafters/stable")
+            self.requires.add("libmp3lame/3.100")
         if self.options.fdk_aac:
             self.requires.add("libfdk_aac/2.0.0")
         if self.options.webp:
