@@ -230,7 +230,7 @@ class FFMpegConan(ConanFile):
         if self.options.webp:
             self._copy_pkg_config('libwebp')  # components: libwebpmux
         if self.options.vorbis:
-            self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
+            shutil.copyfile('vorbis.pc', 'vorbisenc.pc')
         if self.settings.os == "Linux":
             if self.options.xcb:
                 self._copy_pkg_config('libxcb')
