@@ -240,7 +240,7 @@ class FFMpegConan(ConanFile):
             self.build_configure()
 
     def _format_path(self, path):
-        return tools.unix_path(path) if self._use_winbash else path
+        return tools.unix_path(path) if self._use_winbash else path.replace("\\", "/")
 
     @property
     def _target_os(self):
@@ -349,9 +349,9 @@ class FFMpegConan(ConanFile):
                 args.append('--enable-libmfx' if self.options.qsv else '--disable-libmfx')
 
             if "CC" in os.environ:
-                args.append('--cc=%s' % tools.unix_path(os.environ["CC"]))
+                args.append('--cc=%s' % self._format_path(os.environ["CC"]))
             if "CXX" in os.environ:
-                args.append('--cxx=%s' % tools.unix_path(os.environ["CXX"]))
+                args.append('--cxx=%s' % self._format_path(os.environ["CXX"]))
 
             arch = self._target_arch
             args.append('--arch=%s' % arch)
