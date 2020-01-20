@@ -177,6 +177,8 @@ class FFMpegConan(ConanFile):
                 self.requires.add("libalsa/1.1.9")
             if self.options.xcb:
                 self.requires.add("libxcb/1.13.1@bincrafters/stable")
+            if self.options.pulse:
+                self.requires("pulseaudio/13.0@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
@@ -184,8 +186,6 @@ class FFMpegConan(ConanFile):
                 installer = tools.SystemPackageTool()
 
                 packages = []
-                if self.options.pulse:
-                    packages.append('libpulse-dev')
                 if self.options.vaapi:
                     packages.append('libva-dev')
                 if self.options.vdpau:
