@@ -142,17 +142,17 @@ class FFMpegConan(ConanFile):
         if self.options.iconv:
             self.requires.add("libiconv/1.15")
         if self.options.freetype:
-            self.requires.add("freetype/2.10.0")
+            self.requires.add("freetype/2.10.1")
         if self.options.openjpeg:
             self.requires.add("openjpeg/2.3.1")
         if self.options.openh264:
-            self.requires.add("openh264/1.7.0@bincrafters/stable")
+            self.requires.add("openh264/1.7.0")
         if self.options.vorbis:
             self.requires.add("vorbis/1.3.6")
         if self.options.opus:
             self.requires.add("opus/1.3.1")
         if self.options.zmq:
-            self.requires.add("zmq/4.3.1@bincrafters/stable")
+            self.requires.add("zeromq/4.3.2")
         if self.options.sdl2:
             self.requires.add("sdl2/2.0.9@bincrafters/stable")
         if self.options.x264:
