@@ -346,36 +346,31 @@ class FFMpegConan(ConanFile):
         else:
             self.cpp_info.libs = libs
         if self.settings.os == "Macos":
-            frameworks = ['CoreVideo', 'CoreMedia', 'CoreGraphics', 'CoreFoundation', 'OpenGL', 'Foundation']
+            self.cpp_info.frameworks = ['CoreVideo', 'CoreMedia', 'CoreGraphics', 'CoreFoundation', 'OpenGL', 'Foundation']
             if self.options.appkit:
-                frameworks.append('AppKit')
+                self.cpp_info.frameworks.append('AppKit')
             if self.options.avfoundation:
-                frameworks.append('AVFoundation')
+                self.cpp_info.frameworks.append('AVFoundation')
             if self.options.coreimage:
-                frameworks.append('CoreImage')
+                self.cpp_info.frameworks.append('CoreImage')
             if self.options.audiotoolbox:
-                frameworks.append('AudioToolbox')
+                self.cpp_info.frameworks.append('AudioToolbox')
             if self.options.videotoolbox:
-                frameworks.append('VideoToolbox')
+                self.cpp_info.frameworks.append('VideoToolbox')
             if self.options.securetransport:
-                frameworks.append('Security')
-            for framework in frameworks:
-                self.cpp_info.exelinkflags.append("-framework %s" % framework)
-            self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
+                self.cpp_info.frameworks.append('Security')
         elif self.settings.os == "Linux":
-            self.cpp_info.libs.extend(['dl', 'pthread'])
-            if self.options.pulse:
-                self.cpp_info.libs.append('pulse')
+            self.cpp_info.system_libs.extend(['dl', 'pthread'])
             if self.options.vaapi:
-                self.cpp_info.libs.extend(['va', 'va-drm', 'va-x11'])
+                self.cpp_info.system_libs.extend(['va', 'va-drm', 'va-x11'])
             if self.options.vdpau:
-                self.cpp_info.libs.extend(['vdpau', 'X11'])
+                self.cpp_info.system_libs.extend(['vdpau', 'X11'])
             if self.options.xcb:
-                self.cpp_info.libs.extend(['xcb-shm', 'xcb-shape', 'xcb-xfixes'])
+                self.cpp_info.system_libs.extend(['xcb-shm', 'xcb-shape', 'xcb-xfixes'])
             if self.settings.os != "Windows" and self.options.fPIC:
                 # https://trac.ffmpeg.org/ticket/1713
                 # https://ffmpeg.org/platform.html#Advanced-linking-configuration
                 # https://ffmpeg.org/pipermail/libav-user/2014-December/007719.html
                 self.cpp_info.sharedlinkflags.append("-Wl,-Bsymbolic")
         elif self.settings.os == "Windows":
-            self.cpp_info.libs.extend(['ws2_32', 'secur32', 'shlwapi', 'strmiids', 'vfw32', 'bcrypt'])
+            self.cpp_info.system_libs.extend(['ws2_32', 'secur32', 'shlwapi', 'strmiids', 'vfw32', 'bcrypt'])
