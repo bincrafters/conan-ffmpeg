@@ -246,6 +246,11 @@ class FFMpegConan(ConanFile):
             args.append('--pkg-config-flags=--static')
             if self.settings.build_type == 'Debug':
                 args.extend(['--disable-optimizations', '--disable-mmx', '--disable-stripping', '--enable-debug'])
+            # since ffmpeg's build system ignores CC and CXX
+            if 'CC' in os.environ:
+                args.append('--cc=%s' % os.environ['CC'])
+            if 'CXX' in os.environ:
+                args.append('--cxx=%s' % os.environ['CXX'])
             if self._is_msvc:
                 args.append('--toolchain=msvc')
                 args.append('--extra-cflags=-%s' % self.settings.compiler.runtime)
