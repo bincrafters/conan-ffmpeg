@@ -185,7 +185,7 @@ class FFMpegConan(ConanFile):
             if tools.os_info.with_apt:
                 installer = tools.SystemPackageTool()
 
-                packages = []
+                packages = []                
                 if self.options.vaapi:
                     packages.append('libva-dev')
                 if self.options.vdpau:
@@ -230,7 +230,7 @@ class FFMpegConan(ConanFile):
         if self.options.webp:
             self._copy_pkg_config('libwebp')  # components: libwebpmux
         if self.options.vorbis:
-            shutil.copyfile('vorbis.pc', 'vorbisenc.pc')
+            self._copy_pkg_config('vorbis')  # components: vorbisenc, vorbisfile
         if self.settings.os == "Linux":
             if self.options.xcb:
                 self._copy_pkg_config('libxcb')
