@@ -176,7 +176,7 @@ class FFMpegConan(ConanFile):
             if self.options.alsa:
                 self.requires.add("libalsa/1.1.9")
             if self.options.xcb:
-                self.requires.add("libxcb/1.13.1@bincrafters/stable")
+                self.requires.add("xorg/system")
             if self.options.pulse:
                 self.requires("pulseaudio/13.0@bincrafters/stable")
 
