@@ -182,16 +182,24 @@ class FFMpegConan(ConanFile):
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
+            package_tool = tools.SystemPackageTool(conanfile=self, default_mode="verify")
+            packages = []
             if tools.os_info.with_apt:
-                installer = tools.SystemPackageTool()
-
-                packages = []
                 if self.options.vaapi:
-                    packages.append('libva-dev')
+                    if not package_tool.installed('libva-dev'):
+                        packages.append('libva-dev')
                 if self.options.vdpau:
-                    packages.append('libvdpau-dev')
-                for package in packages:
-                    installer.install(package)
+                    if not package_tool.installed('libvdpau-dev'):
+                        packages.append('libvdpau-dev')
+            elif tools.os_info.with_yum or tools.os_info.with_dnf:
+                if self.options.vaapi:
+                    if not package_tool.installed('libva-devel'):
+                        packages.append('libva-devel')
+                if self.options.vdpau:
+                    if not package_tool.installed('libvdpau-devel'):
+                        packages.append('libvdpau-devel')
+            for package in packages:
+                package_tool.install(package)
 
     def _copy_pkg_config(self, name):
         root = self.deps_cpp_info[name].rootpath
