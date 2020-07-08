@@ -182,16 +182,20 @@ class FFMpegConan(ConanFile):
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
+            package_tool = tools.SystemPackageTool()
+            packages = []
             if tools.os_info.with_apt:
-                installer = tools.SystemPackageTool()
-
-                packages = []
                 if self.options.vaapi:
                     packages.append('libva-dev')
                 if self.options.vdpau:
                     packages.append('libvdpau-dev')
-                for package in packages:
-                    installer.install(package)
+            elif tools.os_info.with_yum or tools.os_info.with_dnf:
+                if self.options.vaapi:
+                    packages.append('libva-devel')
+                if self.options.vdpau:
+                    packages.append('libvdpau-devel')
+            for package in packages:
+                package_tool.install(package)
 
     def _copy_pkg_config(self, name):
         root = self.deps_cpp_info[name].rootpath
@@ -231,9 +235,6 @@ class FFMpegConan(ConanFile):
             self._copy_pkg_config('libwebp')  # components: libwebpmux
         if self.options.vorbis:
             shutil.copyfile('vorbis.pc', 'vorbisenc.pc')  # components: vorbisenc, vorbisfile
-        if self.settings.os == "Linux":
-            if self.options.xcb:
-                self._copy_pkg_config('libxcb')
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
