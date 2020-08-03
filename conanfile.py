@@ -198,6 +198,8 @@ class FFMpegConan(ConanFile):
                 package_tool.install(package)
 
     def _copy_pkg_config(self, name):
+        if not name in self.deps_cpp_info.deps:
+            return
         root = self.deps_cpp_info[name].rootpath
         pc_dir = os.path.join(root, 'lib', 'pkgconfig')
         pc_files = glob.glob('%s/*.pc' % pc_dir)
