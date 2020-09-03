@@ -233,8 +233,6 @@ class FFMpegConan(ConanFile):
         # FIXME : once component feature is out, should be unnecessary
         if self.options.webp:
             self._copy_pkg_config('libwebp')  # components: libwebpmux
-        if self.options.vorbis:
-            shutil.copyfile('vorbis.pc', 'vorbisenc.pc')  # components: vorbisenc, vorbisfile
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
