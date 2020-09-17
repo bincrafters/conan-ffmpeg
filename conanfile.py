@@ -197,19 +197,6 @@ class FFMpegConan(ConanFile):
             for package in packages:
                 package_tool.install(package)
 
-    def _copy_pkg_config(self, name):
-        root = self.deps_cpp_info[name].rootpath
-        pc_dir = os.path.join(root, 'lib', 'pkgconfig')
-        pc_files = glob.glob('%s/*.pc' % pc_dir)
-        for pc_name in pc_files:
-            new_pc = os.path.basename(pc_name)
-            self.output.warn('copy .pc file %s' % os.path.basename(pc_name))
-            shutil.copy(pc_name, new_pc)
-            prefix = tools.unix_path(root) if self.settings.os == 'Windows' else root
-            tools.replace_prefix_in_pc_file(new_pc, prefix)
-        for dep in self.deps_cpp_info[name].public_deps:
-            self._copy_pkg_config(dep)
-
     def _patch_sources(self):
         if self._is_msvc and self.options.x264 and not self.options['libx264'].shared:
             # suppress MSVC linker warnings: https://trac.ffmpeg.org/ticket/7396
@@ -230,9 +217,6 @@ class FFMpegConan(ConanFile):
             self.build_configure()
 
     def build_configure(self):
-        # FIXME : once component feature is out, should be unnecessary
-        if self.options.webp:
-            self._copy_pkg_config('libwebp')  # components: libwebpmux
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
