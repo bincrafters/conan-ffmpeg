@@ -130,7 +130,7 @@ class FFMpegConan(ConanFile):
                 self.build_requires("msys2/20190524")
         if self.settings.os == 'Linux':
             if not tools.which('pkg-config'):
-                self.build_requires('pkg-config_installer/0.29.2@bincrafters/stable')
+                self.build_requires('pkgconf/1.7.3')
 
     def requirements(self):
         if self.options.zlib:
@@ -152,7 +152,7 @@ class FFMpegConan(ConanFile):
         if self.options.opus:
             self.requires("opus/1.3.1")
         if self.options.zmq:
-            self.requires("zeromq/4.3.2")
+            self.requires("zeromq/4.3.3")
         if self.options.sdl2:
             self.requires("sdl2/2.0.9@bincrafters/stable")
         if self.options.x264:
