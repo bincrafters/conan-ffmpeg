@@ -130,84 +130,75 @@ class FFMpegConan(ConanFile):
                 self.build_requires("msys2/20190524")
         if self.settings.os == 'Linux':
             if not tools.which('pkg-config'):
-                self.build_requires('pkg-config_installer/0.29.2@bincrafters/stable')
+                self.build_requires('pkgconf/1.7.3')
 
     def requirements(self):
         if self.options.zlib:
-            self.requires.add("zlib/1.2.11")
+            self.requires("zlib/1.2.11")
         if self.options.bzlib:
-            self.requires.add("bzip2/1.0.8")
+            self.requires("bzip2/1.0.8")
         if self.options.lzma:
-            self.requires.add("xz_utils/5.2.4")
+            self.requires("xz_utils/5.2.4")
         if self.options.iconv:
-            self.requires.add("libiconv/1.16")
+            self.requires("libiconv/1.16")
         if self.options.freetype:
-            self.requires.add("freetype/2.10.1")
+            self.requires("freetype/2.10.2")
         if self.options.openjpeg:
-            self.requires.add("openjpeg/2.3.1")
+            self.requires("openjpeg/2.3.1")
         if self.options.openh264:
-            self.requires.add("openh264/1.7.0")
+            self.requires("openh264/1.7.0")
         if self.options.vorbis:
-            self.requires.add("vorbis/1.3.6")
+            self.requires("vorbis/1.3.7")
         if self.options.opus:
-            self.requires.add("opus/1.3.1")
+            self.requires("opus/1.3.1")
         if self.options.zmq:
-            self.requires.add("zeromq/4.3.2")
+            self.requires("zeromq/4.3.3")
         if self.options.sdl2:
-            self.requires.add("sdl2/2.0.9@bincrafters/stable")
+            self.requires("sdl2/2.0.9@bincrafters/stable")
         if self.options.x264:
-            self.requires.add("libx264/20190605")
+            self.requires("libx264/20190605")
         if self.options.x265:
-            self.requires.add("libx265/3.2.1")
+            self.requires("libx265/3.2.1")
         if self.options.vpx:
-            self.requires.add("libvpx/1.8.0@bincrafters/stable")
+            self.requires("libvpx/1.8.0@bincrafters/stable")
         if self.options.mp3lame:
-            self.requires.add("libmp3lame/3.100")
+            self.requires("libmp3lame/3.100")
         if self.options.fdk_aac:
-            self.requires.add("libfdk_aac/2.0.0")
+            self.requires("libfdk_aac/2.0.0")
         if self.options.webp:
-            self.requires.add("libwebp/1.0.3")
+            self.requires("libwebp/1.0.3")
         if self.options.openssl:
-            self.requires.add("openssl/1.1.1d")
+            self.requires("openssl/1.1.1g")
         if self.settings.os == "Windows":
             if self.options.qsv:
-                self.requires.add("intel_media_sdk/2018R2_1@bincrafters/stable")
+                self.requires("intel_media_sdk/2018R2_1@bincrafters/stable")
         if self.settings.os == "Linux":
             if self.options.alsa:
-                self.requires.add("libalsa/1.1.9")
+                self.requires("libalsa/1.1.9")
             if self.options.xcb:
-                self.requires.add("libxcb/1.13.1@bincrafters/stable")
+                self.requires("xorg/system")
             if self.options.pulse:
                 self.requires("pulseaudio/13.0@bincrafters/stable")
 
     def system_requirements(self):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
+            package_tool = tools.SystemPackageTool()
+            packages = []
             if tools.os_info.with_apt:
-                installer = tools.SystemPackageTool()
-
-                packages = []
                 if self.options.vaapi:
                     packages.append('libva-dev')
                 if self.options.vdpau:
                     packages.append('libvdpau-dev')
-                for package in packages:
-                    installer.install(package)
-
-    def _copy_pkg_config(self, name):
-        root = self.deps_cpp_info[name].rootpath
-        pc_dir = os.path.join(root, 'lib', 'pkgconfig')
-        pc_files = glob.glob('%s/*.pc' % pc_dir)
-        for pc_name in pc_files:
-            new_pc = os.path.basename(pc_name)
-            self.output.warn('copy .pc file %s' % os.path.basename(pc_name))
-            shutil.copy(pc_name, new_pc)
-            prefix = tools.unix_path(root) if self.settings.os == 'Windows' else root
-            tools.replace_prefix_in_pc_file(new_pc, prefix)
-        for dep in self.deps_cpp_info[name].public_deps:
-            self._copy_pkg_config(dep)
+            elif tools.os_info.with_yum or tools.os_info.with_dnf:
+                if self.options.vaapi:
+                    packages.append('libva-devel')
+                if self.options.vdpau:
+                    packages.append('libvdpau-devel')
+            for package in packages:
+                package_tool.install(package)
 
     def _patch_sources(self):
-        if self._is_msvc and self.options.x264 and not self.options['x264'].shared:
+        if self._is_msvc and self.options.x264 and not self.options['libx264'].shared:
             # suppress MSVC linker warnings: https://trac.ffmpeg.org/ticket/7396
             # warning LNK4049: locally defined symbol x264_levels imported
             # warning LNK4049: locally defined symbol x264_bit_depth imported
@@ -226,14 +217,6 @@ class FFMpegConan(ConanFile):
             self.build_configure()
 
     def build_configure(self):
-        # FIXME : once component feature is out, should be unnecessary
-        if self.options.webp:
-            self._copy_pkg_config('libwebp')  # components: libwebpmux
-        if self.options.vorbis:
-            shutil.copyfile('vorbis.pc', 'vorbisenc.pc')  # components: vorbisenc, vorbisfile
-        if self.settings.os == "Linux":
-            if self.options.xcb:
-                self._copy_pkg_config('libxcb')
         with tools.chdir(self._source_subfolder):
             prefix = tools.unix_path(self.package_folder) if self.settings.os == 'Windows' else self.package_folder
             args = ['--prefix=%s' % prefix,
