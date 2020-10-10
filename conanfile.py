@@ -138,7 +138,7 @@ class FFMpegConan(ConanFile):
         if self.options.bzlib:
             self.requires("bzip2/1.0.8")
         if self.options.lzma:
-            self.requires("xz_utils/5.2.4")
+            self.requires("xz_utils/5.2.5")
         if self.options.iconv:
             self.requires("libiconv/1.16")
         if self.options.freetype:
