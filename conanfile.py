@@ -142,7 +142,7 @@ class FFMpegConan(ConanFile):
         if self.options.iconv:
             self.requires("libiconv/1.16")
         if self.options.freetype:
-            self.requires("freetype/2.10.2")
+            self.requires("freetype/2.10.4")
         if self.options.openjpeg:
             self.requires("openjpeg/2.3.1")
         if self.options.openh264:
